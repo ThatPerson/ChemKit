@@ -71,14 +71,14 @@ chem_backup = chemicals_in_system
 resultant_chemicals = []
 while (len(chemicals_in_system) > 0):
 	# First we get the highest electronegativity
-	i = get_max_en(chemicals_in_system)
+	i = get_min_en(chemicals_in_system)
 	print(i)
 	chemicals_in_system.remove(i)
 	# We assume maximum valency - so if oxygen is binding to carbon it will _always_ be a double bond (assuming carbon can fit it). 
 	valency = get_valency(i)
 	compound = [i]
 	while valency > 0 and len(chemicals_in_system) > 0:
-		q = get_min_en(chemicals_in_system)
+		q = get_max_en(chemicals_in_system)
 		chemicals_in_system.remove(q)
 		v = get_valency(q)
 		v_left = 0
@@ -88,7 +88,7 @@ while (len(chemicals_in_system) > 0):
 		compound.append(q)
 		valency = valency - v
 		while (v_left > 0) and len(chemicals_in_system) > 0:
-			y = get_max_en(chemicals_in_system) # Should probably do this stuff recursively, but I can't think straight.
+			y = get_min_en(chemicals_in_system) # Should probably do this stuff recursively, but I can't think straight.
 			chemicals_in_system.remove(y)
 			l = get_valency(y)
 			l_left = 0
@@ -102,6 +102,20 @@ while (len(chemicals_in_system) > 0):
 
 
 print(json.dumps(resultant_chemicals))
+chemicals = []
+output = lo + " -> "
+first = 1
+for i in resultant_chemicals:
+	if (first == 0):
+		output = output + " + "
+	first = 0
+	chemical = ""
+	for p in i:
+		chemical = chemical + p['small']
+	print( chemical)
+	chemicals.append(chemical)
+	output = output + chemical
+print (output)
 
 #print (chemicals_in_system)
 
