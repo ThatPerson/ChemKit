@@ -1,0 +1,1091 @@
+{
+	"table": [
+		
+				{
+					"group": "",
+					"position": 0,
+					"name": "Hydrogen",
+					"number": 1,
+					"small": "H",
+					"molar": 1.00794,
+					"electronegativity": 2.1,
+					"electrons": [
+						1
+					]
+				},
+				{
+					"group": "Element Noble p",
+					"position": 17,
+					"name": "Helium",
+					"number": 2,
+					"small": "He",
+					"molar": 4.002602,
+					"electronegativity": -1,
+					"electrons": [
+						2
+					]
+				},
+				{
+					"group": "Element Alkali s",
+					"position": 0,
+					"name": "Lithium",
+					"number": 3,
+					"small": "Li",
+					"molar": 6.941,
+					"electronegativity": 1.0,
+					"electrons": [
+						2,
+						1
+					]
+				},
+				{
+					"group": "Element Alkaline s",
+					"position": 1,
+					"name": "Beryllium",
+					"number": 4,
+					"small": "Be",
+					"molar": 9.012182,
+					"electronegativity": 1.5,
+					"electrons": [
+						2,
+						2
+					]
+				},
+				{
+					"group": "Element Metalloid Boron p",
+					"position": 12,
+					"name": "Boron",
+					"number": 5,
+					"small": "B",
+					"molar": 10.811,
+					"electronegativity": 2.0,
+					"electrons": [
+						2,
+						3
+					]
+				},
+				{
+					"group": "Element Nonmetal Carbon p",
+					"position": 13,
+					"name": "Carbon",
+					"number": 6,
+					"small": "C",
+					"molar": 12.0107,
+					"electronegativity": 2.5,
+					"electrons": [
+						2,
+						4
+					]
+				},
+				{
+					"group": "Element Nonmetal Pnictogen p",
+					"position": 14,
+					"name": "Nitrogen",
+					"number": 7,
+					"small": "N",
+					"molar": 14.0067,
+					"electronegativity": 3.0,
+					"electrons": [
+						2,
+						5
+					]
+				},
+				{
+					"group": "Element Nonmetal Chalcogen p",
+					"position": 15,
+					"name": "Oxygen",
+					"number": 8,
+					"small": "O",
+					"molar": 15.9994,
+					"electronegativity": 3.5,
+					"electrons": [
+						2,
+						6
+					]
+				},
+				{
+					"group": "Element Halogen p",
+					"position": 16,
+					"name": "Fluorine",
+					"number": 9,
+					"small": "F",
+					"molar": 18.998404,
+					"electronegativity": 4.0,
+					"electrons": [
+						2,
+						7
+					]
+				},
+				{
+					"group": "Element Noble p",
+					"position": 17,
+					"name": "Neon",
+					"number": 10,
+					"small": "Ne",
+					"molar": 20.1797,
+					"electronegativity": -1,
+					"electrons": [
+						2,
+						8
+					]
+				},
+				{
+					"group": "Element Alkali s",
+					"position": 0,
+					"name": "Sodium",
+					"number": 11,
+					"small": "Na",
+					"molar": 22.989769,
+					"electronegativity": 0.9,
+					"electrons": [
+						2,
+						8,
+						1
+					]
+				},
+				{
+					"group": "Element Alkaline s",
+					"position": 1,
+					"name": "Magnesium",
+					"number": 12,
+					"small": "Mg",
+					"molar": 24.305,
+					"electronegativity": 1.2,
+					"electrons": [
+						2,
+						8,
+						2
+					]
+				},
+				{
+					"group": "Element Poor Boron p",
+					"position": 12,
+					"name": "Aluminium",
+					"number": 13,
+					"small": "Al",
+					"molar": 26.981539,
+					"electronegativity": 1.5,
+					"electrons": [
+						2,
+						8,
+						3
+					]
+				},
+				{
+					"group": "Element Metalloid Carbon p",
+					"position": 13,
+					"name": "Silicon",
+					"number": 14,
+					"small": "Si",
+					"molar": 28.0855,
+					"electronegativity": 1.8,
+					"electrons": [
+						2,
+						8,
+						4
+					]
+				},
+				{
+					"group": "Element Nonmetal Pnictogen p",
+					"position": 14,
+					"name": "Phosphorus",
+					"number": 15,
+					"small": "P",
+					"molar": 30.973763,
+					"electronegativity": 2.1,
+					"electrons": [
+						2,
+						8,
+						5
+					]
+				},
+				{
+					"group": "Element Nonmetal Chalcogen p",
+					"position": 15,
+					"name": "Sulfur",
+					"number": 16,
+					"small": "S",
+					"molar": 32.065,
+					"electronegativity": 2.5,
+					"electrons": [
+						2,
+						8,
+						6
+					]
+				},
+				{
+					"group": "Element Halogen p",
+					"position": 16,
+					"name": "Chlorine",
+					"number": 17,
+					"small": "Cl",
+					"molar": 35.453,
+					"electronegativity": 3.0,
+					"electrons": [
+						2,
+						8,
+						7
+					]
+				},
+				{
+					"group": "Element Noble p",
+					"position": 17,
+					"name": "Argon",
+					"number": 18,
+					"small": "Ar",
+					"molar": 39.948,
+					"electronegativity": -1,
+					"electrons": [
+						2,
+						8,
+						8
+					]
+				},
+				{
+					"group": "Element Alkali s",
+					"position": 0,
+					"name": "Potassium",
+					"number": 19,
+					"small": "K",
+					"molar": 39.0983,
+					"electronegativity": 0.8,
+					"electrons": [
+						2,
+						8,
+						8,
+						1
+					]
+				},
+				{
+					"group": "Element Alkaline s",
+					"position": 1,
+					"name": "Calcium",
+					"number": 20,
+					"small": "Ca",
+					"molar": 40.078,
+					"electronegativity": 1.0,
+					"electrons": [
+						2,
+						8,
+						8,
+						2
+					]
+				},
+				{
+					"group": "Element Transition d",
+					"position": 2,
+					"name": "Scandium",
+					"number": 21,
+					"small": "Sc",
+					"molar": 44.955914,
+					"electronegativity": 1.3,
+					"electrons": [
+						2,
+						8,
+						9,
+						2
+					]
+				},
+				{
+					"group": "Element Transition d",
+					"position": 3,
+					"name": "Titanium",
+					"number": 22,
+					"small": "Ti",
+					"molar": 47.867,
+					"electronegativity": 1.5,
+					"electrons": [
+						2,
+						8,
+						10,
+						2
+					]
+				},
+				{
+					"group": "Element Transition d",
+					"position": 4,
+					"name": "Vanadium",
+					"number": 23,
+					"small": "V",
+					"molar": 50.9415,
+					"electronegativity": 1.6,
+					"electrons": [
+						2,
+						8,
+						11,
+						2
+					]
+				},
+				{
+					"group": "Element Transition d",
+					"position": 5,
+					"name": "Chromium",
+					"number": 24,
+					"small": "Cr",
+					"molar": 51.9961,
+					"electronegativity": 1.6,
+					"electrons": [
+						2,
+						8,
+						13,
+						1
+					]
+				},
+				{
+					"group": "Element Transition d",
+					"position": 6,
+					"name": "Manganese",
+					"number": 25,
+					"small": "Mn",
+					"molar": 54.938046,
+					"electronegativity": 1.5,
+					"electrons": [
+						2,
+						8,
+						13,
+						2
+					]
+				},
+				{
+					"group": "Element Transition d",
+					"position": 7,
+					"name": "Iron",
+					"number": 26,
+					"small": "Fe",
+					"molar": 55.845,
+					"electronegativity": 1.8,
+					"electrons": [
+						2,
+						8,
+						14,
+						2
+					]
+				},
+				{
+					"group": "Element Transition d",
+					"position": 8,
+					"name": "Cobalt",
+					"number": 27,
+					"small": "Co",
+					"molar": 58.933193,
+					"electronegativity": 1.9,
+					"electrons": [
+						2,
+						8,
+						15,
+						2
+					]
+				},
+				{
+					"group": "Element Transition d",
+					"position": 9,
+					"name": "Nickel",
+					"number": 28,
+					"small": "Ni",
+					"molar": 58.6934,
+					"electronegativity": 1.9,
+					"electrons": [
+						2,
+						8,
+						16,
+						2
+					]
+				},
+				{
+					"group": "Element Transition d",
+					"position": 10,
+					"name": "Copper",
+					"number": 29,
+					"small": "Cu",
+					"molar": 63.546,
+					"electronegativity": 1.9,
+					"electrons": [
+						2,
+						8,
+						18,
+						1
+					]
+				},
+				{
+					"group": "Element Transition d",
+					"position": 11,
+					"name": "Zinc",
+					"number": 30,
+					"small": "Zn",
+					"molar": 65.38,
+					"electronegativity": 1.6,
+					"electrons": [
+						2,
+						8,
+						18,
+						2
+					]
+				},
+				{
+					"group": "Element Poor Boron p",
+					"position": 12,
+					"name": "Gallium",
+					"number": 31,
+					"small": "Ga",
+					"molar": 69.723,
+					"electronegativity": 1.6,
+					"electrons": [
+						2,
+						8,
+						18,
+						3
+					]
+				},
+				{
+					"group": "Element Metalloid Carbon p",
+					"position": 13,
+					"name": "Germanium",
+					"number": 32,
+					"small": "Ge",
+					"molar": 72.63,
+					"electronegativity": 1.8,
+					"electrons": [
+						2,
+						8,
+						18,
+						4
+					]
+				},
+				{
+					"group": "Element Metalloid Pnictogen p",
+					"position": 14,
+					"name": "Arsenic",
+					"number": 33,
+					"small": "As",
+					"molar": 74.9216,
+					"electronegativity": 2.0,
+					"electrons": [
+						2,
+						8,
+						18,
+						5
+					]
+				},
+				{
+					"group": "Element Nonmetal Chalcogen p",
+					"position": 15,
+					"name": "Selenium",
+					"number": 34,
+					"small": "Se",
+					"molar": 78.96,
+					"electronegativity": 2.4,
+					"electrons": [
+						2,
+						8,
+						18,
+						6
+					]
+				},
+				{
+					"group": "Element Halogen p",
+					"position": 16,
+					"name": "Bromine",
+					"number": 35,
+					"small": "Br",
+					"molar": 79.904,
+					"electronegativity": 2.8,
+					"electrons": [
+						2,
+						8,
+						18,
+						7
+					]
+				},
+				{
+					"group": "Element Noble p",
+					"position": 17,
+					"name": "Krypton",
+					"number": 36,
+					"small": "Kr",
+					"molar": 83.798,
+					"electronegativity": -1,
+					"electrons": [
+						2,
+						8,
+						18,
+						8
+					]
+				},
+				{
+					"group": "Element Alkali s",
+					"position": 0,
+					"name": "Rubidium",
+					"number": 37,
+					"small": "Rb",
+					"molar": 85.4678,
+					"electronegativity": 0.8,
+					"electrons": [
+						2,
+						8,
+						18,
+						8,
+						1
+					]
+				},
+				{
+					"group": "Element Alkaline s",
+					"position": 1,
+					"name": "Strontium",
+					"number": 38,
+					"small": "Sr",
+					"molar": 87.62,
+					"electronegativity": 1.0,
+					"electrons": [
+						2,
+						8,
+						18,
+						8,
+						2
+					]
+				},
+				{
+					"group": "Element Transition d",
+					"position": 2,
+					"name": "Yttrium",
+					"number": 39,
+					"small": "Y",
+					"molar": 88.90585,
+					"electronegativity": 1.2,
+					"electrons": [
+						2,
+						8,
+						18,
+						9,
+						2
+					]
+				},
+				{
+					"group": "Element Transition d",
+					"position": 3,
+					"name": "Zirconium",
+					"number": 40,
+					"small": "Zr",
+					"molar": 91.224,
+					"electronegativity": 1.4,
+					"electrons": [
+						2,
+						8,
+						18,
+						10,
+						2
+					]
+				},
+				{
+					"group": "Element Transition d",
+					"position": 4,
+					"name": "Niobium",
+					"number": 41,
+					"small": "Nb",
+					"molar": 92.90638,
+					"electronegativity": 1.6,
+					"electrons": [
+						2,
+						8,
+						18,
+						12,
+						1
+					]
+				},
+				{
+					"group": "Element Transition d",
+					"position": 5,
+					"name": "Molybdenum",
+					"number": 42,
+					"small": "Mo",
+					"molar": 95.96,
+					"electronegativity": 1.8,
+					"electrons": [
+						2,
+						8,
+						18,
+						13,
+						1
+					]
+				},
+				{
+					"group": "Element Transition d",
+					"position": 6,
+					"name": "Technetium",
+					"number": 43,
+					"small": "Tc",
+					"molar": 98,
+					"electronegativity": 1.9,
+					"electrons": [
+						2,
+						8,
+						18,
+						13,
+						2
+					]
+				},
+				{
+					"group": "Element Transition d",
+					"position": 7,
+					"name": "Ruthenium",
+					"number": 44,
+					"small": "Ru",
+					"molar": 101.07,
+					"electronegativity": 2.2,
+					"electrons": [
+						2,
+						8,
+						18,
+						15,
+						1
+					]
+				},
+				{
+					"group": "Element Transition d",
+					"position": 8,
+					"name": "Rhodium",
+					"number": 45,
+					"small": "Rh",
+					"molar": 102.9055,
+					"electronegativity": 2.2,
+					"electrons": [
+						2,
+						8,
+						18,
+						16,
+						1
+					]
+				},
+				{
+					"group": "Element Transition d",
+					"position": 9,
+					"name": "Palladium",
+					"number": 46,
+					"small": "Pd",
+					"molar": 106.42,
+					"electronegativity": 2.2,
+					"electrons": [
+						2,
+						8,
+						18,
+						18
+					]
+				},
+				{
+					"group": "Element Transition d",
+					"position": 10,
+					"name": "Silver",
+					"number": 47,
+					"small": "Ag",
+					"molar": 107.8682,
+					"electronegativity": 1.9,
+					"electrons": [
+						2,
+						8,
+						18,
+						18,
+						1
+					]
+				},
+				{
+					"group": "Element Transition d",
+					"position": 11,
+					"name": "Cadmium",
+					"number": 48,
+					"small": "Cd",
+					"molar": 112.411,
+					"electronegativity": 1.7,
+					"electrons": [
+						2,
+						8,
+						18,
+						18,
+						2
+					]
+				},
+				{
+					"group": "Element Poor Boron p",
+					"position": 12,
+					"name": "Indium",
+					"number": 49,
+					"small": "In",
+					"molar": 114.818,
+					"electronegativity": 1.7,
+					"electrons": [
+						2,
+						8,
+						18,
+						18,
+						3
+					]
+				},
+				{
+					"group": "Element Poor Carbon p",
+					"position": 13,
+					"name": "Tin",
+					"number": 50,
+					"small": "Sn",
+					"molar": 118.71,
+					"electronegativity": 1.8,
+					"electrons": [
+						2,
+						8,
+						18,
+						18,
+						4
+					]
+				},
+				{
+					"group": "Element Metalloid Pnictogen p",
+					"position": 14,
+					"name": "Antimony",
+					"number": 51,
+					"small": "Sb",
+					"molar": 121.76,
+					"electronegativity": 1.9,
+					"electrons": [
+						2,
+						8,
+						18,
+						18,
+						5
+					]
+				},
+				{
+					"group": "Element Metalloid Chalcogen p",
+					"position": 15,
+					"name": "Tellurium",
+					"number": 52,
+					"small": "Te",
+					"molar": 127.6,
+					"electronegativity": 2.1,
+					"electrons": [
+						2,
+						8,
+						18,
+						18,
+						6
+					]
+				},
+				{
+					"group": "Element Halogen p",
+					"position": 16,
+					"name": "Iodine",
+					"number": 53,
+					"small": "I",
+					"molar": 126.90447,
+					"electronegativity": 2.5,
+					"electrons": [
+						2,
+						8,
+						18,
+						18,
+						7
+					]
+				},
+				{
+					"group": "Element Noble p",
+					"position": 17,
+					"name": "Xenon",
+					"number": 54,
+					"small": "Xe",
+					"molar": 131.293,
+					"electronegativity": 2.6,
+					"electrons": [
+						2,
+						8,
+						18,
+						18,
+						8
+					]
+				},
+				{
+					"group": "Element Alkali s",
+					"position": 0,
+					"name": "Caesium",
+					"number": 55,
+					"small": "Cs",
+					"molar": 132.90546,
+					"electronegativity": 0.7,
+					"electrons": [
+						2,
+						8,
+						18,
+						18,
+						8,
+						1
+					]
+				},
+				{
+					"group": "Element Alkaline s",
+					"position": 1,
+					"name": "Barium",
+					"number": 56,
+					"small": "Ba",
+					"molar": 137.327,
+					"electronegativity": 0.9,
+					"electrons": [
+						2,
+						8,
+						18,
+						18,
+						8,
+						2
+					]
+				},
+				{
+					"group": "Element Transition d",
+					"position": 3,
+					"name": "Hafnium",
+					"number": 72,
+					"small": "Hf",
+					"molar": 178.49,
+					"electronegativity": 1.3,
+					"electrons": [
+						2,
+						8,
+						18,
+						32,
+						10,
+						2
+					]
+				},
+				{
+					"group": "Element Transition d",
+					"position": 4,
+					"name": "Tantalum",
+					"number": 73,
+					"small": "Ta",
+					"molar": 180.94788,
+					"electronegativity": 1.5,
+					"electrons": [
+						2,
+						8,
+						18,
+						32,
+						11,
+						2
+					]
+				},
+				{
+					"group": "Element Transition d",
+					"position": 5,
+					"name": "Tungsten",
+					"number": 74,
+					"small": "W",
+					"molar": 183.84,
+					"electronegativity": 1.7,
+					"electrons": [
+						2,
+						8,
+						18,
+						32,
+						12,
+						2
+					]
+				},
+				{
+					"group": "Element Transition d",
+					"position": 6,
+					"name": "Rhenium",
+					"number": 75,
+					"small": "Re",
+					"molar": 186.207,
+					"electronegativity": 1.9,
+					"electrons": [
+						2,
+						8,
+						18,
+						32,
+						13,
+						2
+					]
+				},
+				{
+					"group": "Element Transition d",
+					"position": 7,
+					"name": "Osmium",
+					"number": 76,
+					"small": "Os",
+					"molar": 190.23,
+					"electronegativity": 2.2,
+					"electrons": [
+						2,
+						8,
+						18,
+						32,
+						14,
+						2
+					]
+				},
+				{
+					"group": "Element Transition d",
+					"position": 8,
+					"name": "Iridium",
+					"number": 77,
+					"small": "Ir",
+					"molar": 192.217,
+					"electronegativity": 2.2,
+					"electrons": [
+						2,
+						8,
+						18,
+						32,
+						15,
+						2
+					]
+				},
+				{
+					"group": "Element Transition d",
+					"position": 9,
+					"name": "Platinum",
+					"number": 78,
+					"small": "Pt",
+					"molar": 195.084,
+					"electronegativity": 2.2,
+					"electrons": [
+						2,
+						8,
+						18,
+						32,
+						17,
+						1
+					]
+				},
+				{
+					"group": "Element Transition d",
+					"position": 10,
+					"name": "Gold",
+					"number": 79,
+					"small": "Au",
+					"molar": 196.96657,
+					"electronegativity": 2.4,
+					"electrons": [
+						2,
+						8,
+						18,
+						32,
+						18,
+						1
+					]
+				},
+				{
+					"group": "Element Transition d",
+					"position": 11,
+					"name": "Mercury",
+					"number": 80,
+					"small": "Hg",
+					"molar": 200.59,
+					"electronegativity": 1.9,
+					"electrons": [
+						2,
+						8,
+						18,
+						32,
+						18,
+						2
+					]
+				},
+				{
+					"group": "Element Poor Boron p",
+					"position": 12,
+					"name": "Thallium",
+					"number": 81,
+					"small": "Tl",
+					"molar": 204.3833,
+					"electronegativity": 1.8,
+					"electrons": [
+						2,
+						8,
+						18,
+						32,
+						18,
+						3
+					]
+				},
+				{
+					"group": "Element Poor Carbon p",
+					"position": 13,
+					"name": "Lead",
+					"number": 82,
+					"small": "Pb",
+					"molar": 207.2,
+					"electronegativity": 1.9,
+					"electrons": [
+						2,
+						8,
+						18,
+						32,
+						18,
+						4
+					]
+				},
+				{
+					"group": "Element Poor Pnictogen p",
+					"position": 14,
+					"name": "Bismuth",
+					"number": 83,
+					"small": "Bi",
+					"molar": 208.9804,
+					"electronegativity": 1.9,
+					"electrons": [
+						2,
+						8,
+						18,
+						32,
+						18,
+						5
+					]
+				},
+				{
+					"group": "Element Metalloid Chalcogen p",
+					"position": 15,
+					"name": "Polonium",
+					"number": 84,
+					"small": "Po",
+					"molar": 209,
+					"electronegativity": 2.0,
+					"electrons": [
+						2,
+						8,
+						18,
+						32,
+						18,
+						6
+					]
+				},
+				{
+					"group": "Element Halogen p",
+					"position": 16,
+					"name": "Astatine",
+					"number": 85,
+					"small": "At",
+					"molar": 210,
+					"electronegativity": 2.2,
+					"electrons": [
+						2,
+						8,
+						18,
+						32,
+						18,
+						7
+					]
+				},
+				{
+					"group": "Element Noble p",
+					"position": 17,
+					"name": "Radon",
+					"number": 86,
+					"small": "Rn",
+					"molar": 222,
+					"electronegativity": 2.4,
+					"electrons": [
+						2,
+						8,
+						18,
+						32,
+						18,
+						8
+					]
+				}
+	]
+}
