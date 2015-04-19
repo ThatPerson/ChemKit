@@ -68,7 +68,7 @@ def chemical_to_name(c):
 def get_next_set(mima, valency):
         global system_chemicals
         global compound
-        print ("Valency to fill is "+str(valency))
+        #print ("Valency to fill is "+str(valency))
         while (valency > 0 and len(system_chemicals) > 0):
                 if (mima == 1):
                         plo = 0
@@ -84,7 +84,7 @@ def get_next_set(mima, valency):
                         v = valency
                 compound.append(y)
                 valency = valency - v
-                print ("Added "+y['small']+" to mixture. Remaining valency is "+str(valency))
+                #print ("Added "+y['small']+" to mixture. Remaining valency is "+str(valency))
                 get_next_set(plo, v_left)
                 
         return 1
