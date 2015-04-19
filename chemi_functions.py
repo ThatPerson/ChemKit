@@ -2,6 +2,7 @@ import json
 import re
 
 compound = []
+polyatomic = [["NO3", "Nr"]] # Polyatomic ions. Pretty shoddy way of dealing with it.
 
 with open('pt.json') as json_data:
         d = json.load(json_data)
@@ -95,10 +96,11 @@ def get_next_set(mima, valency):
 # The most reactive chemicals will react with the most reactive on the other end of the spectrum.
 # We compute this with electronegativities - so if I have NaCl and HF then the highest EN (F) is paired with the lowest EN (Na). This gets NaF, and these two are removed from the chemicals_in_system. The process is then repeated.
 def get_resultant():
-        chem_backup = system_chemicals
-        resultant_chemicals = []                
         global compound
         global system_chemicals
+        chem_backup = system_chemicals
+        resultant_chemicals = []                
+       
 
         while (len(system_chemicals) > 0):
                 # First we get the highest electronegativity
@@ -156,6 +158,9 @@ def get_resultant():
         
 def find_chemical_system(c):
         c = c.replace(" ", "")
+        global polyatomic
+        for i in polyatomic:
+            c = c.replace(i[0], i[1])
         comp = c.split("+")
         chemicals_in_system = []
         for i in comp: #This nets us a list of all the chemicals.
@@ -195,6 +200,7 @@ def get_mass(c):
 
 chemicals_in_system = []
 print ("Welcome to ChemKit (copyright 2015).")
+print("This is primarily a covalent reaction simulator. While it may work for ionic bonding I cannot promise anything.")
 verbose = 0
 lo = input("> ")
 while (lo != "exit"):
@@ -234,7 +240,9 @@ while (lo != "exit"):
                         if (number_of_c[i] > 1):
                                 output = output + str(number_of_c[i])
                         output = output + chemicals[i]
-
+                
+                for i in polyatomic:
+                        output = output.replace(i[1], i[0])
                 
                 print (output)
                 
@@ -256,8 +264,6 @@ while (lo != "exit"):
                         
                 
         if (qwo[0] == "mass"):
-                
-
                 print (str(round(get_mass(zor), 3)) + "g/mol")
         if (qwo[0] == "set"):
                 if (qwo[1] == "verbose"):
