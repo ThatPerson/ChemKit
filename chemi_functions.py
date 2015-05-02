@@ -1,6 +1,9 @@
 import json
 import re
 
+
+preset_chemicals = [] # will be in the form ["varname", "chemical"]. Then I can just do the same thing as polyatomic.
+
 compound = []
 polyatomic = [["NO3", "Nr"]] # Polyatomic ions. Pretty shoddy way of dealing with it.
 
@@ -85,6 +88,9 @@ def get_next_set(mima, valency):
                         v = valency
                 compound.append(y)
                 valency = valency - v
+                
+               
+                
                 #print ("Added "+y['small']+" to mixture. Remaining valency is "+str(valency))
                 get_next_set(plo, v_left)
                 
@@ -107,7 +113,7 @@ def get_resultant():
                 i = get_min_en(system_chemicals)
 
                 system_chemicals.remove(i)
-                # We assume maximum valency - so if oxygen is binding to carbon it will _always_ be a double bond (assuming carbon can fit it). 
+                # We assume maximum valency - so if oxygen is binding to carbon it will _always_ be a double bond (assuming carbon can fit it). Could probably do it only as a single but it would produce a different outcome - I have no way to rank how good an outcome is. This would produce many different products.
                 valency = get_valency(i)
                 compound = [i]
                 
@@ -159,8 +165,11 @@ def get_resultant():
 def find_chemical_system(c):
         c = c.replace(" ", "")
         global polyatomic
+        global preset_chemicals
         for i in polyatomic:
             c = c.replace(i[0], i[1])
+        for p in preset_chemicals:
+                c = c.replace(p[0], p[1])
         comp = c.split("+")
         chemicals_in_system = []
         for i in comp: #This nets us a list of all the chemicals.
@@ -202,7 +211,7 @@ chemicals_in_system = []
 print ("Welcome to ChemKit (copyright 2015).")
 print("This is primarily a covalent reaction simulator. While it may work for ionic bonding I cannot promise anything.")
 verbose = 0
-lo = input("> ")
+lo = raw_input("> ")
 while (lo != "exit"):
         system_chemicals = []
         qwo = lo.split(" ")
@@ -218,6 +227,9 @@ while (lo != "exit"):
 
                 chemicals = []
                 number_of_c = []
+                for ii in preset_chemicals:
+                        zor = zor.replace(ii[0], ii[1])
+
                 output = zor + " -> "
                 first = 1
 
@@ -250,7 +262,11 @@ while (lo != "exit"):
                         print ("reactants..")
                         for i in q:
                                 if (i != '+'):
-                                        print (i + ": " + (str(round(get_mass(i), 3)) + "g/mol"))
+                                        l = i
+                                        for poq in preset_chemicals:
+                                                if (poq[0] == l):
+                                                        l = poq[1]
+                                        print (l + ": " + (str(round(get_mass(i), 3)) + "g/mol"))
                         print ("products..")
                         q_total = 0
                         for i in range(0, len(chemicals)):
@@ -274,7 +290,12 @@ while (lo != "exit"):
                 if (qwo[1] == "verbose"):
                         verbose = 0
                         print ("Verbose mode off")
-        lo = input("> ")
+
+        if (len(qwo) > 2):
+                if (qwo[1] == "="):
+                        preset_chemicals.append([qwo[0], qwo[2]])
+
+        lo = raw_input("> ")
         
         
 #print (chemicals_in_system)
