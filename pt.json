@@ -1086,6 +1086,18 @@
 						18,
 						8
 					]
+				},
+				{
+					"group": "Covalently Bonded Group",
+					"position": 100,
+					"name": "Nitrate",
+					"number": 100,
+					"small": "Nr",
+					"molar": 222,
+					"electronegativity": 2.4,
+					"electrons": [
+						7
+					]
 				}
 	]
 }

@@ -259,6 +259,9 @@ while (lo != "exit"):
                 print (output)
                 
                 if (verbose == 1):
+                    
+                    
+                        # Eventually make it so that if verbose flag is set it prints out the formula in terms of the variables - so methane + 2oxygen -> etc.
                         print ("reactants..")
                         for i in q:
                                 if (i != '+'):
