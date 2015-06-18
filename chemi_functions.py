@@ -101,6 +101,7 @@ def get_next_set(mima, valency):
 # The algorithm works on the following principle.
 # The most reactive chemicals will react with the most reactive on the other end of the spectrum.
 # We compute this with electronegativities - so if I have NaCl and HF then the highest EN (F) is paired with the lowest EN (Na). This gets NaF, and these two are removed from the chemicals_in_system. The process is then repeated.
+# Naturally, this algorithm doesn't necessarily get it right, but it does manage quite a few reactions well.
 def get_resultant():
         global compound
         global system_chemicals
