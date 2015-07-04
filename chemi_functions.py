@@ -24,18 +24,18 @@ def get_max_en(c):
         highest_val = 0
         highest_n = {}
         for i in c:
-                if i['electronegativity'] > highest_val:
+                if (i['electronegativity'] * ((i['position'])+-7)) > highest_val:
                         highest_n = i
-                        highest_val = i['electronegativity']
+                        highest_val = (i['electronegativity'] * ((i['position'])+-7))
         return highest_n
         
 def get_min_en(c):
         lowest_val = 1000
         lowest_n = {}
         for i in c:
-                if i['electronegativity'] < lowest_val and i['electronegativity'] != -1:
+                if (i['electronegativity'] * ((i['position'])+-7)) < lowest_val and (i['electronegativity'] * ((i['position'])+-7)) != -1:
                         lowest_n = i
-                        lowest_val = i['electronegativity']
+                        lowest_val = (i['electronegativity'] * ((i['position'])+-7))
         return lowest_n
     
 def get_valency(c):
