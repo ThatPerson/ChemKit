@@ -5,8 +5,9 @@ import re
 preset_chemicals = [] # will be in the form ["varname", "chemical"]. Then I can just do the same thing as polyatomic.
 
 compound = []
-polyatomic = [["NO3", "Nr"]] # Polyatomic ions. Pretty shoddy way of dealing with it.
-
+current = []
+#polyatomic = [["NO3", "Nr"]] # Polyatomic ions. Pretty shoddy way of dealing with it.
+polyatomic = []
 with open('pt.json') as json_data:
         d = json.load(json_data)
 
@@ -24,18 +25,18 @@ def get_max_en(c):
         highest_val = 0
         highest_n = {}
         for i in c:
-                if (i['electronegativity'] * ((i['position'])+-7)) > highest_val:
+                if (i['electronegativity'] * ((i['position']/2)**2)) > highest_val:
                         highest_n = i
-                        highest_val = (i['electronegativity'] * ((i['position'])+-7))
+                        highest_val = (i['electronegativity'] * ((i['position']/2)**2))
         return highest_n
         
 def get_min_en(c):
         lowest_val = 1000
         lowest_n = {}
         for i in c:
-                if (i['electronegativity'] * ((i['position'])+-7)) < lowest_val and (i['electronegativity'] * ((i['position'])+-7)) != -1:
+                if (i['electronegativity'] * ((i['position']/2)**2)) < lowest_val and (i['electronegativity'] * ((i['position']/2)**2)) != -1:
                         lowest_n = i
-                        lowest_val = (i['electronegativity'] * ((i['position'])+-7))
+                        lowest_val = (i['electronegativity'] * ((i['position']/2)**2))
         return lowest_n
     
 def get_valency(c):
@@ -72,6 +73,7 @@ def chemical_to_name(c):
 def get_next_set(mima, valency):
         global system_chemicals
         global compound
+        global current
         #print ("Valency to fill is "+str(valency))
         while (valency > 0 and len(system_chemicals) > 0):
                 if (mima == 1):
@@ -115,6 +117,7 @@ def get_resultant():
 
                 system_chemicals.remove(i)
                 # We assume maximum valency - so if oxygen is binding to carbon it will _always_ be a double bond (assuming carbon can fit it). Could probably do it only as a single but it would produce a different outcome - I have no way to rank how good an outcome is. This would produce many different products.
+                
                 valency = get_valency(i)
                 compound = [i]
                 
@@ -122,42 +125,7 @@ def get_resultant():
                 ######## START HERE 
                 get_next_set(1, valency)
                 
-                
-                ''' while valency > 0 and len(system_chemicals) > 0:
-                        q = get_max_en(system_chemicals)
-                        system_chemicals.remove(q)
-                        v = get_valency(q)
-                        v_left = 0
-                        if (valency < v):
-                                v_left = v-valency
-                                v = valency # Prevent excess shells being filled
-                        compound.append(q)
-                        valency = valency - v
-                        while (v_left > 0) and len(system_chemicals) > 0:
-                                y = get_min_en(system_chemicals) # Should probably do this stuff recursively, but I can't think straight.
-                                system_chemicals.remove(y)
-                                l = get_valency(y)
-                                l_left = 0
-                                if (v_left < l):
-                                        # Then we cry.
-                                        vp_left = l - v_left
-                                        l = v_left
-                                compound.append(y)
-                                v_left = v_left - l
-                                
-                                while (vp_left > 0) and len(system_chemicals) > 0:
-                                    yp = get_max_en(system_chemicals) # Should probably do this stuff recursively, but I can't think straight.
-                                    system_chemicals.remove(yp)
-                                    lp = get_valency(yp)
-                                    lp_left = 0
-                                    if (vp_left < l):
-                                            # Then we cry.
-                                            l = v_left
-                                    compound.append(yp)
-                                    vp_left = vp_left - l
-                                    
-                        '''            
-                                    
+
                                     
                                     
                 resultant_chemicals.append(compound)
@@ -210,7 +178,7 @@ def get_mass(c):
 
 chemicals_in_system = []
 print ("Welcome to ChemKit (copyright 2015).")
-print("This is primarily a covalent reaction simulator. While it may work for ionic bonding I cannot promise anything.")
+print("This is primarily a reaction simulator.")
 verbose = 0
 lo = raw_input("> ")
 while (lo != "exit"):
