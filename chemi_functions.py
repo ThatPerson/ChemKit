@@ -83,6 +83,10 @@ def get_next_set(mima, valency):
 		else:
 			plo = 1
 			y = get_min_en(system_chemicals)
+
+		if (y == {}):
+			return 1
+			
 		system_chemicals.remove(y)
 		v = get_valency(y)
 		v_left = 0
