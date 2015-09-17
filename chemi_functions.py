@@ -1,5 +1,21 @@
 import json
 import re
+import csv
+import math
+
+e_compounds = []
+e_entropies = []
+e_enthalpies = []
+
+temp_k = 0
+
+with open('data.csv', 'rb') as csvfile:
+	datar = csv.reader(csvfile, delimiter=',', quotechar='|')
+	for row in datar:
+		e_compounds.append(row[0])
+		e_entropies.append(row[3])
+		e_enthalpies.append(row[1])
+
 
 
 preset_chemicals = [] # will be in the form ["varname", "chemical"]. Then I can just do the same thing as polyatomic.
@@ -180,6 +196,19 @@ def get_mass(c):
 		mass = mass + i['molar']
 	return mass
 
+def get_compound_info(s):
+	for i in range(0, len(e_compounds)):
+		if (s == e_compounds[i]):
+			return [float(e_entropies[i]), float(e_enthalpies[i])]
+	return [0, 0]
+
+def is_int(s):
+	try: 
+		int(s)
+		return True
+	except ValueError:
+		return False
+
 chemicals_in_system = []
 print ("Welcome to ChemKit (copyright 2015).")
 print("This is primarily a reaction simulator.")
@@ -190,6 +219,72 @@ while (lo != "exit"):
 	qwo = lo.split(" ")
 	
 	zor = " ".join(qwo[1:])
+	
+	
+	
+	if (qwo[0] == "gibbs"):
+		flip = 0
+		reactants = []
+		products = []
+		reactants_entropy_total = 0
+		reactants_enthalpy_total = 0
+		products_entropy_total = 0
+		products_enthalpy_total = 0
+		t = 1
+		co = ""
+		for i in range(1, len(qwo)):
+			if (qwo[i] == "->"):
+				flip = 1
+			else:
+				if (qwo[i] != "+"):
+					if (flip == 0):
+						t = 1
+						co = qwo[i]
+						if (is_int(qwo[i][0])):
+							t = int(qwo[i][0])
+							co = qwo[i][1:]
+						for p in range(0, t):
+							reactants.append(co)
+							x = (get_compound_info(co))
+							reactants_entropy_total = reactants_entropy_total + x[0]
+							reactants_enthalpy_total = reactants_enthalpy_total + x[1]
+					else:
+						t = 1
+						co = qwo[i]
+						if (is_int(qwo[i][0])):
+							t = int(qwo[i][0])
+							co = qwo[i][1:]
+						for p in range(0, t):
+							products.append(co)
+							x = (get_compound_info(co))
+							products_entropy_total = products_entropy_total + x[0]
+							products_enthalpy_total = products_enthalpy_total + x[1]
+
+		gibbss = (products_enthalpy_total - reactants_enthalpy_total) - (temp_k*(products_entropy_total - reactants_entropy_total))
+		
+		gibbs_products = products_enthalpy_total - (temp_k * products_entropy_total)
+		gibbs_reactants = reactants_enthalpy_total - (temp_k * reactants_entropy_total)
+		entropy_change = products_entropy_total - reactants_entropy_total
+		enthalpy_change = products_enthalpy_total - reactants_enthalpy_total
+		
+		if (verbose == 1):
+			print("Entropy Change of Reaction: "+str(entropy_change)+"kJmol-1K-1")
+			print("Enthalpy Change of Reaction: "+str(enthalpy_change)+"kJmol-1")
+			print("Gibbs Free Energy at "+str(temp_k)+"K: "+str(gibbss)+"kJmol-1")
+		if (gibbss < 0):
+			print("Will reaction go?: Yes")
+		else:
+			print("Will reaction go?: No")
+		if (verbose == 1):
+			print("Temperature: "+str(enthalpy_change/entropy_change)+"K")
+			if (temp_k != 0):
+				equilibrium = math.exp(-(((enthalpy_change)/8.31) * (1/temp_k)) + (entropy_change / 8.31))
+				print("Equilibrium Constant K: "+str(equilibrium))
+		
+
+
+	
+	
 	if (qwo[0] == "resultant"):
 		
 		q = qwo[1:]
@@ -284,6 +379,8 @@ while (lo != "exit"):
 		if (qwo[1] == "rounding"):
 			if (len(qwo) > 2):
 				rounding = int(qwo[2])
+		if (qwo[1] == "temp"):
+			temp_k = float(qwo[2])
 	if (qwo[0] == "unset"):
 		if (qwo[1] == "verbose"):
 			verbose = 0
@@ -312,6 +409,7 @@ while (lo != "exit"):
 		print "mass [COMPOUND] - calculated the molecular mass of a compound."
 		print "resultant [COMPOUND] + [COMPOUND] + ... - utilises an algorithm to predict the resultant chemical products of a reaction."
 		print "composition [COMPOUND] - prints out the composition of a compound."
+		print "gibbs [REACTANTS] -> [PRODUCTS] - prints out enthalpy change, entropy change, predicts optimum temperature and equilibrium constant")
 	lo = raw_input("> ")
 	
 	
