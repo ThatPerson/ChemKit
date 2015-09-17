@@ -16,7 +16,12 @@ with open('data.csv', 'rb') as csvfile:
 		e_entropies.append(row[3])
 		e_enthalpies.append(row[1])
 
-
+with open('data2.csv', 'rb') as csvfile:
+	datar = csv.reader(csvfile, delimiter='@', quotechar='|')
+	for row in datar:
+		e_compounds.append(row[0])
+		e_entropies.append(row[3])
+		e_enthalpies.append(row[1])
 
 preset_chemicals = [] # will be in the form ["varname", "chemical"]. Then I can just do the same thing as polyatomic.
 
