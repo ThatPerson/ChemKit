@@ -252,7 +252,7 @@ while (lo != "exit"):
 							reactants.append(co)
 							x = (get_compound_info(co))
 							reactants_entropy_total = reactants_entropy_total + x[0]
-							reactants_enthalpy_total = reactants_enthalpy_total + x[1]
+							reactants_enthalpy_total = reactants_enthalpy_total + (x[1]*1000)
 					else:
 						t = 1
 						co = qwo[i]
@@ -263,7 +263,7 @@ while (lo != "exit"):
 							products.append(co)
 							x = (get_compound_info(co))
 							products_entropy_total = products_entropy_total + x[0]
-							products_enthalpy_total = products_enthalpy_total + x[1]
+							products_enthalpy_total = products_enthalpy_total + (x[1]*1000)
 
 		gibbss = (products_enthalpy_total - reactants_enthalpy_total) - (temp_k*(products_entropy_total - reactants_entropy_total))
 		
@@ -273,9 +273,9 @@ while (lo != "exit"):
 		enthalpy_change = products_enthalpy_total - reactants_enthalpy_total
 		
 		if (verbose == 1):
-			print("Entropy Change of Reaction: "+str(entropy_change)+"kJmol-1K-1")
-			print("Enthalpy Change of Reaction: "+str(enthalpy_change)+"kJmol-1")
-			print("Gibbs Free Energy at "+str(temp_k)+"K: "+str(gibbss)+"kJmol-1")
+			print("Entropy Change of Reaction: "+str(entropy_change)+"Jmol-1K-1")
+			print("Enthalpy Change of Reaction: "+str(enthalpy_change/1000)+"kJmol-1")
+			print("Gibbs Free Energy at "+str(temp_k)+"K: "+str(gibbss/1000)+"kJmol-1")
 		if (gibbss < 0):
 			print("Will reaction go?: Yes")
 		else:
@@ -283,8 +283,8 @@ while (lo != "exit"):
 		if (verbose == 1):
 			print("Temperature: "+str(enthalpy_change/entropy_change)+"K")
 			if (temp_k != 0):
-				equilibrium = math.exp(-(((enthalpy_change)/8.31) * (1/temp_k)) + (entropy_change / 8.31))
-				print("Equilibrium Constant K: "+str(equilibrium))
+				equilibrium = -(((enthalpy_change)/8.31) * (1/temp_k)) + (entropy_change / 8.31)
+				print("ln K: "+str(equilibrium))
 		
 
 
