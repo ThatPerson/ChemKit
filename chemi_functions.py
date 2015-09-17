@@ -409,7 +409,7 @@ while (lo != "exit"):
 		print "mass [COMPOUND] - calculated the molecular mass of a compound."
 		print "resultant [COMPOUND] + [COMPOUND] + ... - utilises an algorithm to predict the resultant chemical products of a reaction."
 		print "composition [COMPOUND] - prints out the composition of a compound."
-		print "gibbs [REACTANTS] -> [PRODUCTS] - prints out enthalpy change, entropy change, predicts optimum temperature and equilibrium constant")
+		print "gibbs [REACTANTS] -> [PRODUCTS] - prints out enthalpy change, entropy change, predicts optimum temperature and equilibrium constant"
 	lo = raw_input("> ")
 	
 	
