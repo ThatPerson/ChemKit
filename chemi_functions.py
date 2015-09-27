@@ -92,7 +92,7 @@ def chemical_to_name(c):
 	
 	
 
-def get_next_set(mima, valency):
+def get_next_set(mima, valency, last):
 	global system_chemicals
 	global compound
 	global current
@@ -104,7 +104,7 @@ def get_next_set(mima, valency):
 		else:
 			plo = 1
 			y = get_min_en(system_chemicals)
-
+		
 		if (y == {}):
 			return 1
 			
@@ -117,9 +117,13 @@ def get_next_set(mima, valency):
 		compound.append(y)
 		valency = valency - v
 		
+		#print "================"
+		#print last["small"]
+		#print y["small"]
+		#print "================"
 	       
 		
-		get_next_set(plo, v_left)
+		get_next_set(plo, v_left, y)
 		
 	return 1
     
@@ -148,7 +152,7 @@ def get_resultant():
 		
 		
 		######## START HERE 
-		get_next_set(1, valency)
+		get_next_set(1, valency, i)
 		
 
 				    
@@ -204,7 +208,8 @@ def get_mass(c):
 def get_compound_info(s):
 	for i in range(0, len(e_compounds)):
 		if (s == e_compounds[i]):
-			return [float(e_entropies[i]), float(e_enthalpies[i])]
+			if (e_entropies[i] != "-" and e_enthalpies != "-"):
+				return [float(e_entropies[i]), float(e_enthalpies[i])]
 	return [0, 0]
 
 def is_int(s):
@@ -214,6 +219,59 @@ def is_int(s):
 	except ValueError:
 		return False
 	
+def shell_energy(n, l, m, a_n, x):
+	e_c = 1.60217662*pow(10, -19)
+	e_m = 9.10938356*pow(10, -31)
+	planck = 6.62607004*pow(10, -34)
+	Z = a_n
+	ryd = 13.6057
+
+	
+				
+	Z = Z - x
+
+	
+	E = -ryd*(math.pow(Z, 2)/math.pow(n, 2))
+
+	#top_bit = -2 * pow(math.pi, 2) * e_m * pow(a_n, 2) * pow(e_c, 4)
+	#bottom_bit = pow(planck, 2) * pow(n, 2)
+	
+	#return top_bit/bottom_bit
+	return E
+		
+def atomic_number_to_shells(a_n):
+	x = [[[0]], [[0], [0, 0, 0]], [[0], [0, 0, 0], [0, 0, 0, 0, 0]], [[0], [0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0]]]
+	current_n = 0
+	current_l = 0
+	current_m = 0
+	while (a_n > 0):
+		q = 0
+		if (x[current_n][current_l][current_m+current_l] >= 2):
+			if (current_m < current_l):
+				current_m = current_m + 1
+			else:
+				if (current_l < current_n):
+					current_l = current_l + 1
+					current_m = -current_l
+				else:
+					current_n = current_n + 1
+					current_l = 0
+					current_m = 0
+		elif (x[current_n][current_l][current_m+current_l] == 1):
+			for i in range(current_m+current_l, current_l + current_l + 1):
+				if (x[current_n][current_l][i] == 0 and q == 0):
+					x[current_n][current_l][i] = x[current_n][current_l][i] + 1
+					a_n = a_n - 1
+					q = 1
+					break
+			if (q == 0):
+				x[current_n][current_l][current_m+current_l] = x[current_n][current_l][current_m+current_l] + 1
+				a_n = a_n - 1
+		else:
+			x[current_n][current_l][current_m+current_l] = x[current_n][current_l][current_m+current_l] + 1	
+			a_n = a_n - 1	
+
+	return x
 	
 def gibbs(qwo):
 	flip = 0
@@ -275,8 +333,8 @@ def gibbs(qwo):
 				
 
 chemicals_in_system = []
-print ("Welcome to ChemKit (copyright 2015).")
-print("This is primarily a reaction simulator.")
+print ("Welcome to ChemSi")
+print("Type help for help.")
 verbose = 0
 lo = raw_input("> ")
 while (lo != "exit"):
@@ -291,9 +349,6 @@ while (lo != "exit"):
 		gibbs(qwo)
 		
 		
-		
-
-
 	
 	
 	if (qwo[0] == "resultant"):
@@ -398,6 +453,8 @@ while (lo != "exit"):
 			print ("Verbose mode off")
 
 	if (qwo[0] == "element"):
+	
+	#Make reverse lookup - if 'mass20' given as qwo[1] then fine element with that mass.
 		if (len(qwo) > 1):
 			for i in range(1, len(qwo)):
 				p = get_chemical_object(qwo[i])
@@ -406,7 +463,31 @@ while (lo != "exit"):
 					print ("Atomic Number: "+str(p["number"]))
 					print ("Atomic Mass: "+str(round(p["molar"], rounding)))
 					print ("Electronegativity: "+str(round(p["electronegativity"], rounding)))
-					
+
+					orbitals = atomic_number_to_shells(p["number"])
+					c = 0
+					w = 0
+					for n in range(0, len(orbitals)):
+						for l in range(0, len(orbitals[n])):
+							w = 0
+							for m in range(0, len(orbitals[n][l])):
+								
+								if(orbitals[n][l][m] != 0):
+									energy = shell_energy(n+1, l, m-l, p["number"], c)
+									s = ""
+									if l == 0:
+										s = "s"
+									elif l == 1:
+										s = "p"
+									elif l == 2:
+										s = "d"
+									elif l == 3:
+										s = "f"								
+									print (str(n+1) + s + str(m-l)+" ("+str(energy)+"eV): "+str(orbitals[n][l][m]))
+									w = w + orbitals[n][l][m]
+									
+							c = c + w
+								
 					#Perhaps put electron shells here?
 					print ("")
 
@@ -414,7 +495,7 @@ while (lo != "exit"):
 		if (qwo[1] == "="):
 			preset_chemicals.append([qwo[0], qwo[2]])
 	if (qwo[0] == "help"):
-		print "ChemSi is a chemical program - think Octave for chemicals. At the moment it is very basic."
+		print "ChemSi"
 		print "General commands are as follows. More will be added in the future;"
 		print "set verbose - enables verbose mode (ie prints compositions in resultant)"
 		print "mass [COMPOUND] - calculated the molecular mass of a compound."
