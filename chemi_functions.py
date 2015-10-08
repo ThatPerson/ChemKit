@@ -244,6 +244,9 @@ def atomic_number_to_shells(a_n):
 	current_n = 0
 	current_l = 0
 	current_m = 0
+	
+	# Use shell energies to assign electron to lowest energy shell
+	
 	while (a_n > 0):
 		q = 0
 		if (x[current_n][current_l][current_m+current_l] >= 2):
@@ -467,6 +470,7 @@ while (lo != "exit"):
 					orbitals = atomic_number_to_shells(p["number"])
 					c = 0
 					w = 0
+					latest = 0
 					for n in range(0, len(orbitals)):
 						for l in range(0, len(orbitals[n])):
 							w = 0
@@ -483,11 +487,12 @@ while (lo != "exit"):
 										s = "d"
 									elif l == 3:
 										s = "f"								
-									print (str(n+1) + s + str(m-l)+" ("+str(energy)+"eV): "+str(orbitals[n][l][m]))
+									print (str(n+1) + s + str(m-l)+" ("+str(round(energy, 3))+"eV): "+str(orbitals[n][l][m]))
+									latest = energy
 									w = w + orbitals[n][l][m]
 									
 							c = c + w
-								
+					#print(str(energy)+","+str(p["electronegativity"]))
 					#Perhaps put electron shells here?
 					print ("")
 
