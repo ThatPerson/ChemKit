@@ -529,7 +529,10 @@ for i in sys.argv:
 		print ("Temp is "+str(temp_k)+"K")
 	elif (i[:4] == "web"):
 		mode = 1
-	
+	elif (i[:4] == "port"):
+		port = int(i[4:])
+
+		print ("Port is "+str(port)+"K")
 	
 
 class ChemSiHandler(BaseHTTPRequestHandler):
@@ -539,7 +542,10 @@ class ChemSiHandler(BaseHTTPRequestHandler):
 			
 		p = self.path[1:]
 		p = p.replace("%20", " ")
+		p = p.replace("%2520", " ")
 		p = p.replace("%3E", ">")
+		p = p.replace("_", " ")
+		p = p.replace("%2B", "+")
 		respons = {}
 		respons['command'] = p
 		respons['reply'] = respond(p).replace("NEWLINE", "<br>")
