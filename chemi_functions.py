@@ -508,7 +508,7 @@ def respond(lo):
 										s = "d"
 									elif l == 3:
 										s = "f"								
-									response = response +  (str(n+1) + s + str(m-l)+" ("+str(round(energy, 3))+"eV): "+str(orbitals[n][l][m]) + "NEWLINE")
+									response = response +  (str(n+1) + s + str(m-l)+" - "+str(round(energy, 3))+"eV: "+str(orbitals[n][l][m]) + "NEWLINE")
 									latest = energy
 									w = w + orbitals[n][l][m]
 									
