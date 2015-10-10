@@ -284,7 +284,7 @@ def atomic_number_to_shells(a_n):
 
 	return x
 	
-def gibbs(qwo):
+def calculate_gibbs(qwo):
 	response = ""
 	flip = 0
 	reactants = []
@@ -328,20 +328,30 @@ def gibbs(qwo):
 	gibbs_reactants = reactants_enthalpy_total - (temp_k * reactants_entropy_total)
 	entropy_change = products_entropy_total - reactants_entropy_total
 	enthalpy_change = products_enthalpy_total - reactants_enthalpy_total
-	if (entropy_change != 0): 
+	equilibrium = 1
+	if (temp_k != 0):
+		equilibrium = -(((enthalpy_change)/8.31) * (1/temp_k)) + (entropy_change / 8.31)
+	
+	return [gibbss, entropy_change, enthalpy_change, equilibrium]
+	
+	
+def  gibbs(l):
+	s = calculate_gibbs(l)
+	response = ""
+	if (s[1] != 0): 
 		if (verbose == 1):
-			response = response + ("Entropy Change of Reaction: "+str(entropy_change)+"Jmol-1K-1NEWLINE")
-			response = response + ("Enthalpy Change of Reaction: "+str(enthalpy_change/1000)+"kJmol-1NEWLINE")
-			response = response + ("Gibbs Free Energy at "+str(temp_k)+"K: "+str(gibbss/1000)+"kJmol-1NEWLINE")
-		if (gibbss < 0):
+			response = response + ("Entropy Change of Reaction: "+str(s[1])+"Jmol-1K-1NEWLINE")
+			response = response + ("Enthalpy Change of Reaction: "+str(s[2]/1000)+"kJmol-1NEWLINE")
+			response = response + ("Gibbs Free Energy at "+str(temp_k)+"K: "+str(s[0]/1000)+"kJmol-1NEWLINE")
+		if (s[0] < 0):
 			response = response + ("Will reaction go?: YesNEWLINE")
 		else:
 			response = response + ("Will reaction go?: NoNEWLINE")
 		if (verbose == 1):
-			response = response + ("Temperature: "+str(enthalpy_change/entropy_change)+"KNEWLINE")
+			response = response + ("Temperature: "+str(s[2]/s[1])+"KNEWLINE")
 			if (temp_k != 0):
-				equilibrium = -(((enthalpy_change)/8.31) * (1/temp_k)) + (entropy_change / 8.31)
-				response = response + ("ln K: "+str(equilibrium)+"NEWLINE")
+				
+				response = response + ("ln K: "+str(s[3])+"NEWLINE")
 	return response
 				
 
