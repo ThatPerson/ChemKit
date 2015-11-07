@@ -42,15 +42,15 @@ with open('pt.json') as json_data:
 	d = json.load(json_data)
 
 	json_data.close()
-    
+
 def get_chemical_object(c):
 	for l in d['table']:
-		
+
 		if (l['small'] == c):
 			return l
 	print ("Chemical "+c+" not found!")
 	return 0
-    
+
 def get_max_en(c):
 	highest_val = 0
 	highest_n = {}
@@ -59,7 +59,7 @@ def get_max_en(c):
 			highest_n = i
 			highest_val = (i['electronegativity'] * ((i['position']/2)**2))
 	return highest_n
-	
+
 def get_min_en(c):
 	lowest_val = 1000
 	lowest_n = {}
@@ -68,7 +68,7 @@ def get_min_en(c):
 			lowest_n = i
 			lowest_val = (i['electronegativity'] * ((i['position']/2)**2))
 	return lowest_n
-    
+
 def get_valency(c):
 	outer_shell = c['electrons'][len(c['electrons']) - 1]
 	valency = 1
@@ -78,7 +78,7 @@ def get_valency(c):
 		else:
 			valency = 8 - outer_shell
 
-	return valency 
+	return valency
 
 def chemical_to_name(c):
 	chemicals = []
@@ -94,11 +94,11 @@ def chemical_to_name(c):
 		chem = chem + chemicals[i]
 		if (number_of[i] > 1):
 			chem = chem + str(number_of[i])
-			
+
 
 	return chem
-	
-	
+
+
 
 def get_next_set(mima, valency, last):
 	global system_chemicals
@@ -112,10 +112,10 @@ def get_next_set(mima, valency, last):
 		else:
 			plo = 1
 			y = get_min_en(system_chemicals)
-		
+
 		if (y == {}):
 			return 1
-			
+
 		system_chemicals.remove(y)
 		v = get_valency(y)
 		v_left = 0
@@ -124,19 +124,19 @@ def get_next_set(mima, valency, last):
 			v = valency
 		compound.append(y)
 		valency = valency - v
-		
+
 		#print "================"
 		#print last["small"]
 		#print y["small"]
 		#print "================"
-	       
-		
+
+
 		get_next_set(plo, v_left, y)
-		
+
 	return 1
-    
-    
-	
+
+
+
 # The algorithm works on the following principle.
 # The most reactive chemicals will react with the most reactive on the other end of the spectrum.
 # We compute this with electronegativities - so if I have NaCl and HF then the highest EN (F) is paired with the lowest EN (Na). This gets NaF, and these two are removed from the chemicals_in_system. The process is then repeated.
@@ -145,8 +145,8 @@ def get_resultant():
 	global compound
 	global system_chemicals
 	chem_backup = system_chemicals
-	resultant_chemicals = []		
-       
+	resultant_chemicals = []
+
 
 	while (len(system_chemicals) > 0):
 		# First we get the highest electronegativity
@@ -154,20 +154,20 @@ def get_resultant():
 
 		system_chemicals.remove(i)
 		# We assume maximum valency - so if oxygen is binding to carbon it will _always_ be a double bond (assuming carbon can fit it). Could probably do it only as a single but it would produce a different outcome - I have no way to rank how good an outcome is. This would produce many different products.
-					
+
 		valency = get_valency(i)
 		compound = [i]
-		
-		
-		######## START HERE 
-		get_next_set(1, valency, i)
-		
 
-				    
-				    
+
+		######## START HERE
+		get_next_set(1, valency, i)
+
+
+
+
 		resultant_chemicals.append(compound)
 	return resultant_chemicals
-	
+
 def find_chemical_system(c):
 	c = c.replace(" ", "")
 	global polyatomic
@@ -179,13 +179,13 @@ def find_chemical_system(c):
 	comp = c.split("+")
 	chemicals_in_system = []
 	for i in comp: #This nets us a list of all the chemicals.
-		zx = i[0] 
+		zx = i[0]
 
 		p = re.findall(r'\d+', zx)
 		if (len(p) > 0):
 			i = i[1:]
 			lop = int(p[0])
-			
+
 		else:
 			lop = 1
 		chem = re.findall('[A-Z][a-z0-9]{0,3}', i)
@@ -204,7 +204,7 @@ def find_chemical_system(c):
 				for ki in range(0, lop):
 					chemicals_in_system.append(z)
 	return chemicals_in_system
-	
+
 def get_mass(c):
 	chem_sys = []
 	chem_sys = find_chemical_system(c)
@@ -221,12 +221,12 @@ def get_compound_info(s):
 	return [0, 0]
 
 def is_int(s):
-	try: 
+	try:
 		int(s)
 		return True
 	except ValueError:
 		return False
-	
+
 def shell_energy(n, l, m, a_n, x):
 	e_c = 1.60217662*pow(10, -19)
 	e_m = 9.10938356*pow(10, -31)
@@ -234,27 +234,27 @@ def shell_energy(n, l, m, a_n, x):
 	Z = a_n
 	ryd = 13.6057
 
-	
-				
+
+
 	Z = Z - x
 
-	
+
 	E = -ryd*(math.pow(Z, 2)/math.pow(n, 2))
 
 	#top_bit = -2 * pow(math.pi, 2) * e_m * pow(a_n, 2) * pow(e_c, 4)
 	#bottom_bit = pow(planck, 2) * pow(n, 2)
-	
+
 	#return top_bit/bottom_bit
 	return E
-		
+
 def atomic_number_to_shells(a_n):
 	x = [[[0]], [[0], [0, 0, 0]], [[0], [0, 0, 0], [0, 0, 0, 0, 0]], [[0], [0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0]]]
 	current_n = 0
 	current_l = 0
 	current_m = 0
-	
+
 	# Use shell energies to assign electron to lowest energy shell
-	
+
 	while (a_n > 0):
 		q = 0
 		if (x[current_n][current_l][current_m+current_l] >= 2):
@@ -279,11 +279,11 @@ def atomic_number_to_shells(a_n):
 				x[current_n][current_l][current_m+current_l] = x[current_n][current_l][current_m+current_l] + 1
 				a_n = a_n - 1
 		else:
-			x[current_n][current_l][current_m+current_l] = x[current_n][current_l][current_m+current_l] + 1	
-			a_n = a_n - 1	
+			x[current_n][current_l][current_m+current_l] = x[current_n][current_l][current_m+current_l] + 1
+			a_n = a_n - 1
 
 	return x
-	
+
 def calculate_gibbs(qwo):
 	response = ""
 	flip = 0
@@ -330,15 +330,19 @@ def calculate_gibbs(qwo):
 	enthalpy_change = products_enthalpy_total - reactants_enthalpy_total
 	equilibrium = 1
 	if (temp_k != 0):
-		equilibrium = -(((enthalpy_change)/8.31) * (1/temp_k)) + (entropy_change / 8.31)
-	
+		lnK = -(((enthalpy_change)/8.31) * (1/temp_k)) + (entropy_change / 8.31)
+		K = math.exp(lnK)
+		equilibrium = K
+
+		# Van't Hoff equation - lnKeq = -H/(RT) + S/R
+
 	return [gibbss, entropy_change, enthalpy_change, equilibrium]
-	
-	
+
+
 def  gibbs(l):
 	s = calculate_gibbs(l)
 	response = ""
-	if (s[1] != 0): 
+	if (s[1] != 0):
 		if (verbose == 1):
 			response = response + ("Entropy Change of Reaction: "+str(s[1])+"Jmol-1K-1NEWLINE")
 			response = response + ("Enthalpy Change of Reaction: "+str(s[2]/1000)+"kJmol-1NEWLINE")
@@ -348,37 +352,42 @@ def  gibbs(l):
 		else:
 			response = response + ("Will reaction go?: NoNEWLINE")
 		if (verbose == 1):
-			response = response + ("Temperature: "+str(s[2]/s[1])+"KNEWLINE")
+			temp = str((s[2])/s[1])# G = H - TS so TS = H - G, so T = (H-G)/S. Looking for point at which G = 0, so T = H/S
+			if (s[1] > 0):
+				response = response + ("Temperature: >="+temp+"KNEWLINE")
+			else:
+				response = response + ("Temperature: <="+temp+"KNEWLINE")		
 			if (temp_k != 0):
-				
-				response = response + ("ln K: "+str(s[3])+"NEWLINE")
+
+				response = response + ("K: "+str(s[3])+"NEWLINE")
 	return response
-				
+
 
 chemicals_in_system = []
 
 def respond(lo):
-	
+
 	global rounding
 	global verbose
 	global system_chemicals
+	global temp_k
 	response = ""
 	qwo = lo.split(" ")
-	
+
 	zor = " ".join(qwo[1:])
-	
-	
-	
+
+
+
 	if (qwo[0] == "gibbs"):
 		response = gibbs(qwo)
-		
-		
-	
-	
+
+
+
+
 	if (qwo[0] == "resultant"):
-		
+
 		q = qwo[1:]
-		
+
 		chemicals_in_system = find_chemical_system(zor)
 		system_chemicals = chemicals_in_system
 		resultant_chemicals = get_resultant()
@@ -395,14 +404,14 @@ def respond(lo):
 			qwe = chemical_to_name(i)
 			first = 0
 			chemical = ""
-	
+
 			if (qwe in chemicals):
 				number_of_c[chemicals.index(qwe)] = number_of_c[chemicals.index(qwe)] + 1
 			else:
 				chemicals.append(qwe)
 				number_of_c.append(1)
 		first = 1
-	
+
 		for i in range(0, len(chemicals)):
 			if (first == 0):
 				output = output + " + "
@@ -410,15 +419,15 @@ def respond(lo):
 			if (number_of_c[i] > 1):
 				output = output + str(number_of_c[i])
 			output = output + chemicals[i]
-		
+
 		for i in polyatomic:
 			output = output.replace(i[1], i[0])
-		
+
 		response = response +  (output)  + "NEWLINE"
-		
+
 		if (verbose == 1):
-		    
-		    
+
+
 			# Eventually make it so that if verbose flag is set it prints out the formula in terms of the variables - so methane + 2oxygen -> etc.
 			response = response +  ("reactants.." + "NEWLINE")
 			for i in q:
@@ -438,18 +447,18 @@ def respond(lo):
 					qwewe = str(number_of_c[i])
 				response = response +  (qwewe + chemicals[i] + ": " + (str(round(number_of_c[i] * get_mass(chemicals[i]), rounding)) + "g/mol; ")+ str(number_of_c[i]*get_mass(chemicals[i])*100/q_total) + "%" + "NEWLINE")
 			gibbs(output)
-			
-		
+
+
 	if (qwo[0] == "mass"):
 		response = response +  (str(round(get_mass(zor), 3)) + "g/mol" + "NEWLINE")
 	if (qwo[0] == "composition"):
-		
+
 		q = find_chemical_system(zor)
 		total_mass = 0
-		
+
 		elements = []
 		element_mass = []
-		
+
 		for i in q:
 			total_mass = total_mass + i['molar']
 			if (i['name'] in elements):
@@ -457,11 +466,11 @@ def respond(lo):
 			else:
 				elements.append(i['name'])
 				element_mass.append(i['molar'])
-			
+
 		if (total_mass > 0):
 			for i in range(0, len(elements)):
 				response = response + (elements[i]+": "+str(round(100*(element_mass[i]/total_mass), rounding))+"%" + "NEWLINE")
-				
+
 	if (qwo[0] == "set"):
 		if (qwo[1] == "verbose"):
 			verbose = 1
@@ -477,7 +486,7 @@ def respond(lo):
 			response = response +  ("Verbose mode off" + "NEWLINE")
 
 	if (qwo[0] == "element"):
-	
+
 	#Make reverse lookup - if 'mass20' given as qwo[1] then fine element with that mass.
 		if (len(qwo) > 1):
 			for i in range(1, len(qwo)):
@@ -496,7 +505,7 @@ def respond(lo):
 						for l in range(0, len(orbitals[n])):
 							w = 0
 							for m in range(0, len(orbitals[n][l])):
-								
+
 								if(orbitals[n][l][m] != 0):
 									energy = shell_energy(n+1, l, m-l, p["number"], c)
 									s = ""
@@ -507,11 +516,11 @@ def respond(lo):
 									elif l == 2:
 										s = "d"
 									elif l == 3:
-										s = "f"								
+										s = "f"
 									response = response +  (str(n+1) + s + str(m-l)+" - "+str(round(energy, 3))+"eV: "+str(orbitals[n][l][m]) + "NEWLINE")
 									latest = energy
 									w = w + orbitals[n][l][m]
-									
+
 							c = c + w
 					#print(str(energy)+","+str(p["electronegativity"]))
 					#Perhaps put electron shells here?
@@ -529,8 +538,8 @@ def respond(lo):
 		response = response +  "composition [COMPOUND] - prints out the composition of a compound." + "NEWLINE"
 		response = response +  "gibbs [REACTANTS] -> [PRODUCTS] - prints out enthalpy change, entropy change, predicts optimum temperature and equilibrium constant" + "NEWLINE"
 	return response
-	
-mode = 0 # 0 is cmd, 1 is web	
+
+mode = 0 # 0 is cmd, 1 is web
 
 for i in sys.argv:
 	if (i[:4] == "temp"):
@@ -543,13 +552,13 @@ for i in sys.argv:
 		port = int(i[4:])
 
 		print ("Port is "+str(port)+"K")
-	
+
 
 class ChemSiHandler(BaseHTTPRequestHandler):
 	def do_GET(self):
 		if (self.path == "/shutdown"):
 			self.shutdown()
-			
+
 		p = self.path[1:]
 		p = p.replace("%20", " ")
 		p = p.replace("%2520", " ")
@@ -561,7 +570,7 @@ class ChemSiHandler(BaseHTTPRequestHandler):
 		respons['reply'] = respond(p).replace("NEWLINE", "<br>")
 		self.request.send(json.dumps(respons))
 		self.send_response(200)
-	
+
 if (mode == 0):
 	#print (chemicals_in_system)
 
@@ -578,4 +587,3 @@ elif (mode == 1):
 	verbose = 1
 	httpd = SocketServer.TCPServer(("", port), ChemSiHandler)
 	httpd.serve_forever()
-
