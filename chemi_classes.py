@@ -104,7 +104,7 @@ class Element:
                         elif l == 2:s = "d"
                         elif l == 3: s = "f"
 
-                        shell = (str(n+1) + s + str(m-l)
+                        shell = (str(n+1) + s + str(m-l))
                         response['shells'][shell] = {}
                         response['shells'][shell]['energy'] = round(energy, 3)
                         response['shells'][shell]['number'] = self.shells[n][l][m]
@@ -347,4 +347,4 @@ react = s.return_reactants()
 
 print(output(react) + " -> " + output(prod))
 
-print(periodic_table['Na'].out())
+print(periodic_table['F'].out(3))
