@@ -17,7 +17,7 @@ verbose = 1
 temp_k = 0
 
 with open('data.csv', 'rb') as csvfile:
-	datar = csv.reader(csvfile, delimiter=',', quotechar='|')
+	datar = csv.reader(csvfile, delimiter='@', quotechar='|')
 	for row in datar:
 		e_compounds.append(row[0])
 		e_entropies.append(row[3])
@@ -331,8 +331,11 @@ def calculate_gibbs(qwo):
 	equilibrium = 1
 	if (temp_k != 0):
 		lnK = -(((enthalpy_change)/8.31) * (1/temp_k)) + (entropy_change / 8.31)
-		K = math.exp(lnK)
-		equilibrium = K
+		if (lnK >= 0):
+			K = math.exp(lnK)
+			equilibrium = K
+		else:
+			equilibrium = -1
 
 		# Van't Hoff equation - lnKeq = -H/(RT) + S/R
 
@@ -356,8 +359,8 @@ def  gibbs(l):
 			if (s[1] > 0):
 				response = response + ("Temperature: >="+temp+"KNEWLINE")
 			else:
-				response = response + ("Temperature: <="+temp+"KNEWLINE")		
-			if (temp_k != 0):
+				response = response + ("Temperature: <="+temp+"KNEWLINE")
+			if (temp_k != 0 or s[3] != -1):
 
 				response = response + ("K: "+str(s[3])+"NEWLINE")
 	return response
