@@ -265,7 +265,8 @@ class Reaction:
 
             self.get_next_set(plo, v_left, y)
 
-    def find_products(self):
+    def predict(self):
+        self.products = []
         for i in self.reactants:
             for p in i.constituents:
                 self.system.append(p)
@@ -371,7 +372,7 @@ a = Compound("CaCO3", 0, 0, [])
 s.reactants.append(a)
 
 
-s.find_products()
+s.predict()
 
 prod = s.return_products()
 react = s.return_reactants()
