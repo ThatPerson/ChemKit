@@ -9,7 +9,7 @@ from BaseHTTPServer import BaseHTTPRequestHandler
 port = 5655
 
 periodic_table = {}
-
+preset_compound_data = {}
 class Element:
     name = ""
     small = ""
@@ -18,6 +18,7 @@ class Element:
     atomic_number = 0
     electronegativity = 0
     lowest_energy_level = 0
+    electrons = []
     shells = [
                 [[0]],
                 [[0], [0, 0, 0]],
@@ -29,7 +30,7 @@ class Element:
                 [[0], [0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
 
             ]
-    def __init__(self, name="", small="", position=0, molar=0, atomic_number=0, electronegativity=0):
+    def __init__(self, name="", small="", position=0, molar=0, atomic_number=0, electronegativity=0, electrons=[]):
         self.name = name
         self.small = small
         self.position = position
@@ -37,6 +38,7 @@ class Element:
         self.atomic_number = atomic_number
         self.electronegativity = electronegativity
         self.get_shells()
+        self.electrons = electrons
     def get_shells(self):
         a_n = self.atomic_number
         current_n = 0
@@ -112,6 +114,17 @@ class Element:
                 c = c + w
         return response
 
+    def valency(self):
+        outer_shell = self.electrons[len(self.electrons) - 1]
+        valency = 1
+        if (outer_shell < 8): # Surely this limits it?
+            if (outer_shell < 4):
+                valency = outer_shell
+            else:
+                valency = 8 - outer_shell
+        return valency
+
+
 class Compound:
     constituents = []
     name = ""
@@ -123,6 +136,19 @@ class Compound:
         self.name = name
         self.entropy = entropy
         self.enthalpy = enthalpy
+        self.check_data()
+
+        if (self.name == ""):
+            self.find_name()
+        if (self.constituents == []):
+            self.find_consituents()
+
+    def check_data(self):
+        try:
+            self.entropy = preset_compound_data[self.name].entropy
+            self.enthalpy = preset_compound_data[self.name].enthalpy
+        except:
+            print "Data not found"
 
     def components(self):
         q = []
@@ -131,7 +157,7 @@ class Compound:
         return q
 
     def find_consituents(self):
-        name = self.name
+        name = re.sub(r'\([a-z]+\)', '', self.name)
         p = re.findall(r'\d+', name[0])
         if (len(p) > 0):
             name = name[1:]
@@ -190,16 +216,131 @@ class Compound:
 
         return response
 
+class Predefined_Compound:
+    enthalpy = 0
+    entropy = 0
+    name = ""
+    def __init__(self, name, enthalpy, entropy):
+        self.name = name
+        self.entropy = entropy
+        self.enthalpy = enthalpy
+
+class Reaction:
+    temperature = 0
+    reactants = []
+    products = []
+    system = []
+    compound = [] # current working compound.
+    def __init__(self, temp):
+        self.temperature = temp
+
+    def find_en(self, type="HIGH"):
+        if (type == "HIGH"):
+            current = 0
+        else:
+            current = 100
+        curr_element = Element()
+        for i in self.system:
+            if (i.electronegativity != -1):
+                if (type == "HIGH"):
+                    if (i.electronegativity * pow((i.position / 2), 2) > current):
+                        print "CHANGE +"
+                        curr_element = i
+                        current = i.electronegativity * pow((i.position / 2), 2)
+                else:
+                    if (i.electronegativity * pow((i.position / 2), 2) < current):
+
+                        print "CHANGE -"
+                        curr_element = i
+                        current = i.electronegativity * pow((i.position / 2), 2)
+        return curr_element
+
+    def get_next_set(self, mima, valency, last): # Basically just copied from old ChemSi code
+        while (valency > 0 and len(self.system) > 0):
+            if (mima == "HIGH"):
+                plo = "LOW"
+            else:
+                plo = "HIGH"
+            y = self.find_en(mima)
+            if (y == Element()):
+                return 1
+            self.system.remove(y)
+            v = y.valency()
+            v_left = 0
+            if (valency < v):
+                v_left = v - valency
+                v = valency
+            self.compound.append(y)
+            valency = valency - v
+
+            self.get_next_set(plo, v_left, y)
+
+    def find_resultants(self):
+        for i in self.reactants:
+            for p in i.constituents:
+                self.system.append(p)
+        while (len(self.system) > 0):
+            i = self.find_en("HIGH")
+            self.system.remove(i)
+            val = i.valency()
+            self.compound = [i]
+
+            self.get_next_set("LOW", val, i)
+            self.products.append(Compound("", 0, 0, self.compound))
+#def __init__(self, name="", entropy=0, enthalpy=0, constituents=[]):
+
 # could have entropy and enthalpy values in list as they are now so they get added when the compound is created? also get rid of (g)/(l) etc before you run the split code - but maintain in the name (or a new phase variable?)
+
+######################LOAD DATA#################################################
 
 with open('pt.json') as json_data:
     d = json.load(json_data)
     for i in d['table']:
-        periodic_table[i['small']] = Element(i['name'], i['small'], i['position'], i['molar'], i['number'], i['electronegativity'])
+        periodic_table[i['small']] = Element(i['name'], i['small'], i['position'], i['molar'], i['number'], i['electronegativity'], i['electrons'])
     json_data.close()
 
-q = Compound("CaCO3")
-q.find_consituents()
-print q.components()
-print q.find_name()
-print q.composition()
+with open('data.csv', 'rb') as csvfile:
+    datar = csv.reader(csvfile, delimiter='@', quotechar='|')
+    for row in datar:
+        preset_compound_data[row[0]] = Predefined_Compound(row[0], row[1], row[3])
+
+
+with open('data2.csv', 'rb') as csvfile:
+    datar = csv.reader(csvfile, delimiter='@', quotechar='|')
+    for row in datar:
+        preset_compound_data[row[0]] = Predefined_Compound(row[0], row[1], row[3])
+
+################################################################################
+
+s = Reaction(300)
+s.reactants.append(Compound("NaCl"))
+s.reactants.append(Compound("NaCl"))
+s.reactants.append(Compound("F2")) # Make it so Reaction has a parser.
+
+
+q = 1
+xz = ""
+zx = ""
+for i in s.reactants:
+
+    if (q == 1):
+        q = 0
+    else:
+        zx = zx + " + "
+
+    zx = zx + i.name
+
+q = 1
+
+s.find_resultants()
+
+for i in s.products:
+
+    if (q == 1):
+        q = 0
+    else:
+        xz = xz + " + "
+
+    xz = xz + i.name
+
+print zx + " -> " + xz
