@@ -11,27 +11,19 @@ port = 5655
 periodic_table = {}
 preset_compound_data = {}
 class Element:
-    name = ""
-    small = ""
-    position = 0
-    molar = 0
-    atomic_number = 0
-    electronegativity = 0
-    lowest_energy_level = 0
-    electrons = []
-    shells = [
-                [[0]],
-                [[0], [0, 0, 0]],
-                [[0], [0, 0, 0], [0, 0, 0, 0, 0]],
-                [[0], [0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0]],
-                [[0], [0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0]],
-                [[0], [0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
-                [[0], [0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
-                [[0], [0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
-
-            ]
     def __init__(self, name="", small="", position=0, molar=0, atomic_number=0, electronegativity=0, electrons=[]):
         self.name = name
+        self.shells = [
+                    [[0]],
+                    [[0], [0, 0, 0]],
+                    [[0], [0, 0, 0], [0, 0, 0, 0, 0]],
+                    [[0], [0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0]],
+                    [[0], [0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0]],
+                    [[0], [0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
+                    [[0], [0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
+                    [[0], [0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+
+                ]
         self.small = small
         self.position = position
         self.molar = molar
@@ -87,11 +79,14 @@ class Element:
 
         return E
     def out(self, dp):
-        response = ""
-        response = response +  ("=== "+self.name+" ("+self.small+") ==="  + "NEWLINE")
-        response = response +  ("Atomic Number: "+str(self.atomic_number) + "NEWLINE")
-        response = response +  ("Atomic Mass: "+str(round(self.molar, dp)) + "NEWLINE")
-        response = response +  ("Electronegativity: "+str(round(self.electronegativity, dp)) + "NEWLINE")
+        response = {}
+        response['name'] = self.name
+        response['small'] = self.small
+        response['an'] = self.atomic_number
+        response['molar'] = round(self.molar, dp)
+        response['electronegativity'] = round(self.electronegativity, dp)
+
+        response['shells'] = {}
 
         c = 0
         w = 0
@@ -108,7 +103,11 @@ class Element:
                         elif l == 1:s = "p"
                         elif l == 2:s = "d"
                         elif l == 3: s = "f"
-                        response = response +  (str(n+1) + s + str(m-l)+" - "+str(round(energy, 3))+"eV: "+str(self.shells[n][l][m]) + "NEWLINE")
+
+                        shell = (str(n+1) + s + str(m-l)
+                        response['shells'][shell] = {}
+                        response['shells'][shell]['energy'] = round(energy, 3)
+                        response['shells'][shell]['number'] = self.shells[n][l][m]
                         latest = energy
                         w = w + self.shells[n][l][m]
                 c = c + w
@@ -126,38 +125,32 @@ class Element:
 
 
 class Compound:
-    constituents = []
-    name = ""
-    entropy = 0
-    enthalpy = 0
-    molar = 0
-    def __init__(self, name="", entropy=0, enthalpy=0, constituents=[]):
+    def __init__(self, name, entropy, enthalpy, constituents):
         self.constituents = constituents
         self.name = name
         self.entropy = entropy
         self.enthalpy = enthalpy
         self.check_data()
-
-        if (self.name == ""):
+        if (name != ""):
+            self.find_constituents()
+        if (name == ""):
             self.find_name()
-        if (self.constituents == []):
-            self.find_consituents()
-
     def check_data(self):
         try:
             self.entropy = preset_compound_data[self.name].entropy
             self.enthalpy = preset_compound_data[self.name].enthalpy
         except:
             print "Data not found"
-
     def components(self):
         q = []
         for i in self.constituents:
             q.append(i.name)
         return q
-
-    def find_consituents(self):
-        name = re.sub(r'\([a-z]+\)', '', self.name)
+    def find_constituents(self):
+        name = self.name
+        if (len(name) == 0):
+            return 0
+        name = re.sub(r'\([a-z]+\)', '', name)
         p = re.findall(r'\d+', name[0])
         if (len(p) > 0):
             name = name[1:]
@@ -217,40 +210,33 @@ class Compound:
         return response
 
 class Predefined_Compound:
-    enthalpy = 0
-    entropy = 0
-    name = ""
     def __init__(self, name, enthalpy, entropy):
         self.name = name
         self.entropy = entropy
         self.enthalpy = enthalpy
 
 class Reaction:
-    temperature = 0
-    reactants = []
-    products = []
-    system = []
-    compound = [] # current working compound.
     def __init__(self, temp):
         self.temperature = temp
+        self.reactants = []
+        self.products = []
+        self.system = []
+        self.current = []
 
     def find_en(self, type="HIGH"):
         if (type == "HIGH"):
             current = 0
         else:
-            current = 100
+            current = 10000
         curr_element = Element()
         for i in self.system:
             if (i.electronegativity != -1):
                 if (type == "HIGH"):
                     if (i.electronegativity * pow((i.position / 2), 2) > current):
-                        print "CHANGE +"
                         curr_element = i
                         current = i.electronegativity * pow((i.position / 2), 2)
                 else:
                     if (i.electronegativity * pow((i.position / 2), 2) < current):
-
-                        print "CHANGE -"
                         curr_element = i
                         current = i.electronegativity * pow((i.position / 2), 2)
         return curr_element
@@ -262,7 +248,7 @@ class Reaction:
             else:
                 plo = "HIGH"
             y = self.find_en(mima)
-            if (y == Element()):
+            if (len(y.name) == 0):
                 return 1
             self.system.remove(y)
             v = y.valency()
@@ -275,19 +261,50 @@ class Reaction:
 
             self.get_next_set(plo, v_left, y)
 
-    def find_resultants(self):
+    def find_products(self):
         for i in self.reactants:
             for p in i.constituents:
                 self.system.append(p)
         while (len(self.system) > 0):
-            i = self.find_en("HIGH")
+            i = self.find_en("LOW")
             self.system.remove(i)
             val = i.valency()
             self.compound = [i]
 
-            self.get_next_set("LOW", val, i)
+            self.get_next_set("HIGH", val, i)
             self.products.append(Compound("", 0, 0, self.compound))
-#def __init__(self, name="", entropy=0, enthalpy=0, constituents=[]):
+
+    def return_products(self):
+        q = {}
+        for i in self.products:
+            try:
+                q[i.name] = q[i.name] + 1
+            except:
+                q[i.name] = 1
+        return q
+
+    def return_reactants(self):
+        q = {}
+        for i in self.reactants:
+            try:
+                q[i.name] = q[i.name] + 1
+            except:
+                q[i.name] = 1
+        return q
+
+def output(q):
+    resp = ""
+    x = 0
+    for key in q:
+        if (x != 0):
+            resp = resp + " + "
+        else:
+            x = 1
+        if (q[key] > 1):
+            resp = resp + str(q[key]) + key
+        else:
+            resp = resp + key
+    return resp
 
 # could have entropy and enthalpy values in list as they are now so they get added when the compound is created? also get rid of (g)/(l) etc before you run the split code - but maintain in the name (or a new phase variable?)
 
@@ -313,34 +330,21 @@ with open('data2.csv', 'rb') as csvfile:
 ################################################################################
 
 s = Reaction(300)
-s.reactants.append(Compound("NaCl"))
-s.reactants.append(Compound("NaCl"))
-s.reactants.append(Compound("F2")) # Make it so Reaction has a parser.
+a = Compound("F2", 0, 0, [])
+b = Compound("NaCl", 0, 0, [])
+c = Compound("NaCl", 0, 0, [])
 
 
-q = 1
-xz = ""
-zx = ""
-for i in s.reactants:
 
-    if (q == 1):
-        q = 0
-    else:
-        zx = zx + " + "
+s.reactants.append(a)
+s.reactants.append(b)
+s.reactants.append(c)
 
-    zx = zx + i.name
+s.find_products()
 
-q = 1
+prod = s.return_products()
+react = s.return_reactants()
 
-s.find_resultants()
+print(output(react) + " -> " + output(prod))
 
-for i in s.products:
-
-    if (q == 1):
-        q = 0
-    else:
-        xz = xz + " + "
-
-    xz = xz + i.name
-
-print zx + " -> " + xz
+print(periodic_table['Na'].out())
