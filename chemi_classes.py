@@ -125,11 +125,11 @@ class Element:
 
 
 class Compound:
-    def __init__(self, name, entropy, enthalpy, constituents):
+    def __init__(self, name, entropy , enthalpy , constituents):
         self.constituents = constituents
         self.name = name
-        self.entropy = entropy
-        self.enthalpy = enthalpy
+        self.entropy = float(entropy)
+        self.enthalpy = float(enthalpy)
         self.check_data()
         if (name != ""):
             self.find_constituents()
@@ -137,8 +137,8 @@ class Compound:
             self.find_name()
     def check_data(self):
         try:
-            self.entropy = preset_compound_data[self.name].entropy
-            self.enthalpy = preset_compound_data[self.name].enthalpy
+            self.entropy = float(preset_compound_data[self.name].entropy)
+            self.enthalpy = float(preset_compound_data[self.name].enthalpy)
         except:
             print "Data not found"
     def components(self):
@@ -208,6 +208,10 @@ class Compound:
 
 
         return response
+
+    def gibbs_energy(self, temperature):
+        return self.enthalpy - (temperature * self.entropy)
+
 
 class Predefined_Compound:
     def __init__(self, name, enthalpy, entropy):
@@ -292,6 +296,35 @@ class Reaction:
                 q[i.name] = 1
         return q
 
+    def entropy_change(self):
+        # find total entropy of reactants
+        entropy_change = 0
+        for i in self.reactants:
+            entropy_change = entropy_change + i.entropy
+        for i in self.products:
+            entropy_change = entropy_change - i.entropy
+        return entropy_change
+
+    def enthalpy_change(self):
+        enthalpy_change = 0
+        for i in self.reactants:
+            enthalpy_change = enthalpy_change + i.enthalpy
+        for i in self.products:
+            enthalpy_change = enthalpy_change - i.enthalpy
+        return enthalpy_change
+
+    def gibbs_change(self):
+        return self.enthalpy_change() - (self.temperature * self.entropy_change())
+
+    def equilibrium_point(self):
+        if (self.temperature != 0):
+            lnK = -(((enthalpy_change())/8.31) * (1/self.temperature)) + (self.entropy_change() / 8.31)
+            return lnK
+        else:
+            return -1
+
+
+
 def output(q):
     resp = ""
     x = 0
@@ -330,15 +363,13 @@ with open('data2.csv', 'rb') as csvfile:
 ################################################################################
 
 s = Reaction(300)
-a = Compound("F2", 0, 0, [])
-b = Compound("NaCl", 0, 0, [])
-c = Compound("NaCl", 0, 0, [])
+a = Compound("CaCO3", 0, 0, [])
+
 
 
 
 s.reactants.append(a)
-s.reactants.append(b)
-s.reactants.append(c)
+
 
 s.find_products()
 
@@ -346,5 +377,9 @@ prod = s.return_products()
 react = s.return_reactants()
 
 print(output(react) + " -> " + output(prod))
-
-print(periodic_table['F'].out(3))
+print("Gibbs Energy Change: " + str(s.gibbs_change()) + "kJmol-1")
+print("Enthalpy Change: "+str(s.enthalpy_change()/1000) + "kJmol-1")
+print("Entropy Change: "+str(s.entropy_change()) + "Jmol-1")
+#TODO
+#Add Gibbs stuff from old chemi
+#Make front end - GUI?
