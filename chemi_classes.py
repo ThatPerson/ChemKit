@@ -321,21 +321,21 @@ class Reaction:
         # find total entropy of reactants
         entropy_change = 0
         for i in self.reactants:
-            entropy_change = entropy_change + i.entropy
-        for i in self.products:
             entropy_change = entropy_change - i.entropy
+        for i in self.products:
+            entropy_change = entropy_change + i.entropy
         return entropy_change
 
     def enthalpy_change(self):
         enthalpy_change = 0
         for i in self.reactants:
-            enthalpy_change = enthalpy_change + i.enthalpy
-        for i in self.products:
             enthalpy_change = enthalpy_change - i.enthalpy
+        for i in self.products:
+            enthalpy_change = enthalpy_change + i.enthalpy
         return enthalpy_change
 
     def gibbs_change(self):
-        return self.enthalpy_change() - (self.temperature * self.entropy_change())
+        return (1000*self.enthalpy_change()) - (self.temperature * self.entropy_change())
 
     def equilibrium_point(self):
         if (self.temperature != 0):
@@ -343,6 +343,12 @@ class Reaction:
             return lnK
         else:
             return -1
+
+    def turning_point(self, g_e = 0):
+        # G = H - TS
+        # TS = H - G
+        # T = (H-G)/S
+        return (1000*self.enthalpy_change() - g_e) / self.entropy_change()
 
 
 
@@ -384,8 +390,8 @@ with open('data2.csv', 'rb') as csvfile:
 ################################################################################
 
 s = Reaction(300)
-a = Compound("C2H4", 0, 0, [])
-b = Compound("3O2", 0, 0, [])
+a = Compound("H2O", 0, 0, [])
+b = Compound("FeCl3", 0, 0, [])
 
 
 d = periodic_table["Ca"]
@@ -404,9 +410,21 @@ prod = s.return_products()
 react = s.return_reactants()
 
 print(output(react) + " -> " + output(prod))
-print("Gibbs Energy Change: " + str(s.gibbs_change()) + "kJmol-1")
+print("Gibbs Energy Change: " + str(s.gibbs_change()/1000) + "kJmol-1")
 print("Enthalpy Change: "+str(s.enthalpy_change()/1000) + "kJmol-1")
 print("Entropy Change: "+str(s.entropy_change()) + "Jmol-1")
 #TODO
 #Add Gibbs stuff from old chemi
 #Make front end - GUI?
+
+q = Reaction(400)
+l = Compound("H2O(l)", 0, 0, [])
+g = Compound("H2O(g)", 0, 0, [])
+q.reactants.append(l)
+q.products.append(g)
+print(l.enthalpy)
+print(g.enthalpy)
+print("Gibbs Energy Change: " + str(q.gibbs_change()/1000) + "kJmol-1")
+print("Enthalpy Change: "+str(q.enthalpy_change()) + "kJmol-1")
+print("Entropy Change: "+str(q.entropy_change()) + "Jmol-1")
+print q.turning_point(-100000)
