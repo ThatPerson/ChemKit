@@ -19,11 +19,11 @@ class Element:
                     [[0], [0, 0, 0], [0, 0, 0, 0, 0]],
                     [[0], [0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0]],
                     [[0], [0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0]],
-                    [[0], [0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
-                    [[0], [0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
-                    [[0], [0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
-
-                ]
+                    [[0], [0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0]],
+                    [[0], [0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0]],
+                    [[0], [0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0]],
+                    [[0], [0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0]],
+                ] # Over the 5f orbital it is inaccurate as it starts to have other shells - like 5 has another shell after f. For others it is not entirely accurate as it doesn't value it on energy - so 4s is not filled first, and there isn't the split as in copper and chromium.
         self.small = small
         self.position = position
         self.molar = molar
@@ -45,7 +45,7 @@ class Element:
                 if (current_m < current_l):
                     current_m = current_m + 1
                 else:
-                    if (current_l < current_n):
+                    if (current_l < current_n and current_l < 5):
                         current_l = current_l + 1
                         current_m = -current_l
                     else:
@@ -68,7 +68,8 @@ class Element:
 
         return 1
 
-    def shell_energy(self, n, l, m, x):
+    def shell_energy(self, n, l, m, x): # x n is the shell - ie 1, 2, 3. l is the subshell; spdf, m is the orbital; 1,2,3, x is the number of electrons before
+
         e_c = 1.60217662*pow(10, -19)
         e_m = 9.10938356*pow(10, -31)
         planck = 6.62607004*pow(10, -34)
@@ -78,6 +79,25 @@ class Element:
         E = -ryd*(math.pow(Z, 2)/math.pow(n, 2))
 
         return E
+
+    def highest_energy(self, q=1):
+        c = 0
+        w = 0
+        latest = 0
+        energy = 0
+        for n in range(0, len(self.shells)):
+            for l in range(0, len(self.shells[n])):
+                w = 0
+                for m in range(0, len(self.shells[n][l])):
+
+                    if(self.shells[n][l][m] != 0):
+                        energy = self.shell_energy(n+1, l, m-l, c)
+                        w = w + self.shells[n][l][m]
+                c = c + w
+
+        return energy*q
+
+
     def out(self, dp):
         response = {}
         response['name'] = self.name
@@ -234,15 +254,15 @@ class Reaction:
             current = 10000
         curr_element = Element()
         for i in self.system:
-            if (i.electronegativity != -1):
+            if (i.highest_energy(-1) != -1):
                 if (type == "HIGH"):
-                    if (i.electronegativity * pow((i.position / 2), 2) > current):
+                    if (i.highest_energy(-1) * pow((i.position / 2), 2) > current):
                         curr_element = i
-                        current = i.electronegativity * pow((i.position / 2), 2)
+                        current = i.highest_energy(-1) * pow((i.position / 2), 2)
                 else:
-                    if (i.electronegativity * pow((i.position / 2), 2) < current):
+                    if (i.highest_energy(-1) * pow((i.position / 2), 2) < current):
                         curr_element = i
-                        current = i.electronegativity * pow((i.position / 2), 2)
+                        current = i.highest_energy(-1) * pow((i.position / 2), 2)
         return curr_element
 
     def get_next_set(self, mima, valency, last): # Basically just copied from old ChemSi code
@@ -364,12 +384,18 @@ with open('data2.csv', 'rb') as csvfile:
 ################################################################################
 
 s = Reaction(300)
-a = Compound("CaCO3", 0, 0, [])
+a = Compound("C2H4", 0, 0, [])
+b = Compound("3O2", 0, 0, [])
 
 
+d = periodic_table["Ca"]
+print (periodic_table["Ca"].highest_energy())
+print (periodic_table["C"].highest_energy())
+print (periodic_table["O"].highest_energy())
 
 
 s.reactants.append(a)
+s.reactants.append(b)
 
 
 s.predict()
