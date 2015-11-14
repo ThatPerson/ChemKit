@@ -32,6 +32,14 @@ class Element:
         self.get_shells()
         self.electrons = electrons
     def get_shells(self):
+        '''
+            This is a very ugly algorithm. It works by assuming that the lowest
+            orbital has the lowest energy - so, 1s is lower than 2s, 2s than 2p,
+            etc. This breaks down at 3d/4s and later on - so Copper and Chromium
+            both break the rule. Regardless for the majority of reactions it
+            will work - if an element doesn't then it is possible to set the
+            shells manually with Element.shells.
+        '''
         a_n = self.atomic_number
         current_n = 0
         current_l = 0
@@ -265,7 +273,7 @@ class Reaction:
                         current = i.highest_energy(-1) * pow((i.position / 2), 2)
         return curr_element
 
-    def get_next_set(self, mima, valency, last): # Basically just copied from old ChemSi code
+    def get_next_set(self, mima, valency, last):
         while (valency > 0 and len(self.system) > 0):
             if (mima == "HIGH"):
                 plo = "LOW"
@@ -286,6 +294,31 @@ class Reaction:
             self.get_next_set(plo, v_left, y)
 
     def predict(self):
+        '''
+            This algorithm works on the principle that a reaction will _always_
+            tend to its lowest energy state, and that those atoms most willing
+            to give up their electrons will have them taken by those most
+            willing to take them. It is therefore not always right - for example
+                C2H6O + O -> C2H4O + H2O (oxidation of ethanol)
+            would not work - instead it does
+                C2H6O + O -> C2H2 + 2H2O
+            which is incorrect. For quite a few reactions, such as those below
+            it does work pretty well. It does this by matching the highest
+            outside orbital energy with the lowest - so, if Li, H and F were
+            placed together then F by far has the lowest, and Li has the highest
+            . ChemSi would predict that LiF would form as this would be more
+            stable - because if you had HF then Li is more reactive than H
+            (Li in H2O?) so the H would be displaced to give LiF.
+
+                C3H8 + 5O2 -> 3CO2 + 4H2O
+                FeCl3 + Al -> AlCl3
+                2NaCl + F2 -> 2NaF + Cl2
+
+            and many others - play around with it.
+            For some reactions where the enthalpies and entropies are known -
+            see data.csv and data2.csv it will also try to predict gibbs energy.
+
+        '''
         self.products = []
         for i in self.reactants:
             for p in i.constituents:
@@ -389,42 +422,23 @@ with open('data2.csv', 'rb') as csvfile:
 
 ################################################################################
 
-s = Reaction(300)
-a = Compound("H2O", 0, 0, [])
-b = Compound("FeCl3", 0, 0, [])
+if __name__ == "__main__":
+    s = Reaction(300)
+    a = Compound("C2H6O", 0, 0, [])
+    b = Compound("O", 0, 0, [])
 
 
-d = periodic_table["Ca"]
-print (periodic_table["Ca"].highest_energy())
-print (periodic_table["C"].highest_energy())
-print (periodic_table["O"].highest_energy())
+    s.reactants.append(a)
+    s.reactants.append(b)
 
 
-s.reactants.append(a)
-s.reactants.append(b)
+    s.predict()
 
+    prod = s.return_products()
+    react = s.return_reactants()
 
-s.predict()
-
-prod = s.return_products()
-react = s.return_reactants()
-
-print(output(react) + " -> " + output(prod))
-print("Gibbs Energy Change: " + str(s.gibbs_change()/1000) + "kJmol-1")
-print("Enthalpy Change: "+str(s.enthalpy_change()/1000) + "kJmol-1")
-print("Entropy Change: "+str(s.entropy_change()) + "Jmol-1")
+    print(output(react) + " -> " + output(prod))
+    print("Gibbs Energy Change: " + str(s.gibbs_change()/1000) + "kJmol-1")
+    print("Enthalpy Change: "+str(s.enthalpy_change()/1000) + "kJmol-1")
+    print("Entropy Change: "+str(s.entropy_change()) + "Jmol-1")
 #TODO
-#Add Gibbs stuff from old chemi
-#Make front end - GUI?
-
-q = Reaction(400)
-l = Compound("H2O(l)", 0, 0, [])
-g = Compound("H2O(g)", 0, 0, [])
-q.reactants.append(l)
-q.products.append(g)
-print(l.enthalpy)
-print(g.enthalpy)
-print("Gibbs Energy Change: " + str(q.gibbs_change()/1000) + "kJmol-1")
-print("Enthalpy Change: "+str(q.enthalpy_change()) + "kJmol-1")
-print("Entropy Change: "+str(q.entropy_change()) + "Jmol-1")
-print q.turning_point(-100000)
