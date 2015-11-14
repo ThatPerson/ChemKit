@@ -439,6 +439,6 @@ if __name__ == "__main__":
 
     print(output(react) + " -> " + output(prod))
     print("Gibbs Energy Change: " + str(s.gibbs_change()/1000) + "kJmol-1")
-    print("Enthalpy Change: "+str(s.enthalpy_change()/1000) + "kJmol-1")
+    print("Enthalpy Change: "+str(s.enthalpy_change()) + "kJmol-1")
     print("Entropy Change: "+str(s.entropy_change()) + "Jmol-1")
 #TODO
