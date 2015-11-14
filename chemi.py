@@ -409,10 +409,10 @@ with open('pt.json') as json_data:
         periodic_table[i['small']] = Element(i['name'], i['small'], i['position'], i['molar'], i['number'], i['electronegativity'], i['electrons'])
     json_data.close()
 
-with open('data.csv', 'rb') as csvfile:
-    datar = csv.reader(csvfile, delimiter='@', quotechar='|')
-    for row in datar:
-        preset_compound_data[row[0]] = Predefined_Compound(row[0], row[1], row[3])
+#with open('data.csv', 'rb') as csvfile:
+#    datar = csv.reader(csvfile, delimiter='@', quotechar='|')
+#    for row in datar:
+#        preset_compound_data[row[0]] = Predefined_Compound(row[0], row[1], row[3])
 
 
 with open('data2.csv', 'rb') as csvfile:
@@ -424,10 +424,11 @@ with open('data2.csv', 'rb') as csvfile:
 
 if __name__ == "__main__":
     s = Reaction(300)
-    a = Compound("C2H6O", 0, 0, [])
-    b = Compound("O", 0, 0, [])
+    a = Compound("Li", 0, 0, [])
+    b = Compound("H2O", 0, 0, [])
 
 
+    s.reactants.append(a)
     s.reactants.append(a)
     s.reactants.append(b)
 
