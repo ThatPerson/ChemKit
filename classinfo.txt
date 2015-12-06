@@ -1,0 +1,54 @@
+perioic_table - periodic table of class Elements.
+
+class Element;
+init(name, small, position, molar, atomic_number, electronegativity, electrons):
+creates new element with the above characteristics
+get_shells
+sets up shells - so 1s, 2s, 2p1 etc. found in the .shells
+note: this algorithm is not very accurate as it does not take into account the shell energies.
+shell_energy(n, l, m, x)
+calculates the energy of a shell using Rydberg's equation. n is the shell number, l is the subshell, m is the orbital, and x is the number of electrons before this shell.
+highest_energy()
+uses shell_energy to calculate the highest energy shell in the atom.
+out()
+returns a dict of the element
+valency()
+calculates the number bonds that can be formed - so for carbon it is 4, nitrogen 3, etc.
+
+class Compound
+init(name, entropy, enthalpy, constituents):
+entropy, enthalpy and constituents can be set to 0, 0, [] respectively. If name is blank but constituents isn't it will predict the name, and if name is set but not constituents the reverse will occur.
+check_data()
+uses data files deployed with chemsi to get the entropy and enthalpy data.
+components()
+returns a list of all element smalls contained within
+find_constituents()
+uses name to work out constituent atoms.
+find_name()
+uses constituents to find name.
+mass()
+returns molar mass of compound
+composition()
+returns dict of all atoms and the % mass they make up.
+gibbs_energy(temperature)
+calculates gibbs energy of a compound for a given temperature.
+
+class Reaction()
+init(temp)
+sets up the reaction environment
+predict()
+uses my algorithm to try to predict the reaction products based on lowest energy states.
+return_products()
+returns a dict of all products with number - ie {"CaCO3":2}
+return_reactants()
+return_products only for reactants
+entropy_change()
+calculates entropy change of reaction
+enthalpy_change()
+calculates enthalpy change of reaction
+gibbs_change()
+works out gibbs change of a reaction
+equilibrium_point()
+calculates the value of ln(K) for a given reaction at the temperature of the reaction
+turning_point()
+calculates the point at which the gibbs energy is 0 - ie minimum temperature it will go (or max)
