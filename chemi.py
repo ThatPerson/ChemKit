@@ -134,7 +134,7 @@ class Element:
 
                         shell = (str(n+1) + s + str(m-l))
                         response['shells'][shell] = {}
-                        response['shells'][shell]['energy'] = round(energy, 3)
+                        response['shells'][shell]['energy'] = round(energy, dp)
                         response['shells'][shell]['number'] = self.shells[n][l][m]
                         latest = energy
                         w = w + self.shells[n][l][m]
@@ -429,18 +429,10 @@ if __name__ == "__main__":
     s = Reaction(300)
     q = Reaction(300)
 
-    s.reactants.append(Compound("NaBr", 0, 0, []))
-    s.reactants.append(Compound("NaBr", 0, 0, []))
-    s.reactants.append(Compound("Cl2", 0, 0, []))
+    s.reactants.append(Compound("FeBr3", 0, 0, []))
+    s.reactants.append(Compound("Al", 0, 0, []))
     s.predict()
 
     print(output(s.return_reactants()) + " -> " + output(s.return_products()))
-
-    q.reactants = s.products
-    q.reactants[2] = Compound("F2", 0, 0, [])
-
-    q.predict()
-
-    print(output(q.return_reactants()) + " -> " + output(q.return_products()))
 
 #TODO
