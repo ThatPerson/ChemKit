@@ -160,7 +160,8 @@ class Compound:
         self.name = name
         self.entropy = float(entropy)
         self.enthalpy = float(enthalpy)
-        self.check_data()
+        if (self.entropy == 0):
+            self.check_data()
         if (name != ""):
             self.find_constituents()
         if (name == ""):
@@ -169,8 +170,9 @@ class Compound:
         try:
             self.entropy = float(preset_compound_data[self.name].entropy)
             self.enthalpy = float(preset_compound_data[self.name].enthalpy)
+
         except:
-            x = 0
+            print "Data not found"
     def components(self):
         q = []
         for i in self.constituents:
@@ -374,8 +376,11 @@ class Reaction:
 
     def equilibrium_point(self):
         if (self.temperature != 0):
-            lnK = -(((self.enthalpy_change())/8.31) * (1/self.temperature)) + (self.entropy_change() / 8.31)
-            return lnK
+
+
+
+            K = math.exp((-self.gibbs_change())/(8.3145 * self.temperature))
+            return K
         else:
             return -1
 
@@ -437,4 +442,8 @@ if __name__ == "__main__":
 
     print(output(s.return_reactants()) + " -> " + output(s.return_products()))
 
+    p = Reaction(373)
+    p.reactants.append(Compound("H2O(l)", 0, 0, []))
+    p.products.append(Compound("H2O(g)", 0, 0, []))
+    print(p.equilibrium_point())
 #TODO
