@@ -311,7 +311,7 @@ class Reaction:
             (Li in H2O?) so the H would be displaced to give LiF.
 
                 C3H8 + 5O2 -> 3CO2 + 4H2O
-                FeCl3 + Al -> AlCl3
+                FeCl3 + Al -> AlCl3 + Fe
                 2NaCl + F2 -> 2NaF + Cl2
 
             and many others - play around with it.
@@ -372,7 +372,7 @@ class Reaction:
 
     def equilibrium_point(self):
         if (self.temperature != 0):
-            lnK = -(((enthalpy_change())/8.31) * (1/self.temperature)) + (self.entropy_change() / 8.31)
+            lnK = -(((self.enthalpy_change())/8.31) * (1/self.temperature)) + (self.entropy_change() / 8.31)
             return lnK
         else:
             return -1
@@ -424,12 +424,12 @@ with open('data2.csv', 'rb') as csvfile:
 
 if __name__ == "__main__":
     s = Reaction(300)
-    a = Compound("C2H6O", 0, 0, [])
-    b = Compound("O", 0, 0, [])
+    a = Compound("CaCO3", 0, 0, [])
+   # b = Compound("Al", 0, 0, [])
 
 
     s.reactants.append(a)
-    s.reactants.append(b)
+   # s.reactants.append(b)
 
 
     s.predict()
