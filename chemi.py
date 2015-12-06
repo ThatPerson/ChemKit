@@ -22,7 +22,7 @@ class Element:
                     [[0], [0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0]],
                     [[0], [0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0]],
                     [[0], [0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0]],
-                    [[0], [0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0]],
+                    [[0], [0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0]]
                 ] # Over the 5f orbital it is inaccurate as it starts to have other shells - like 5 has another shell after f. For others it is not entirely accurate as it doesn't value it on energy - so 4s is not filled first, and there isn't the split as in copper and chromium.
         self.small = small
         self.position = position
@@ -424,12 +424,22 @@ with open('data2.csv', 'rb') as csvfile:
 
 if __name__ == "__main__":
     s = Reaction(300)
+<<<<<<< HEAD
     a = Compound("CaCO3", 0, 0, [])
    # b = Compound("Al", 0, 0, [])
 
 
     s.reactants.append(a)
    # s.reactants.append(b)
+=======
+    a = Compound("NaCl", 0, 0, [])
+    b = Compound("F2", 0, 0, [])
+
+
+    s.reactants.append(a)
+    s.reactants.append(a)
+    s.reactants.append(b)
+>>>>>>> 16bef7c04adce03cce3af8db09084eb7beea0a43
 
 
     s.predict()
