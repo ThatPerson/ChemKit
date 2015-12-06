@@ -168,7 +168,7 @@ class Compound:
             self.entropy = float(preset_compound_data[self.name].entropy)
             self.enthalpy = float(preset_compound_data[self.name].enthalpy)
         except:
-            print "Data not found"
+            x = 0
     def components(self):
         q = []
         for i in self.constituents:
@@ -423,23 +423,24 @@ with open('data2.csv', 'rb') as csvfile:
 ################################################################################
 
 if __name__ == "__main__":
+    q = periodic_table["Na"].out(1)
+    print q["name"]
+
     s = Reaction(300)
+    q = Reaction(300)
 
-    a = Compound("NaCl", 0, 0, [])
-    b = Compound("F2", 0, 0, [])
-
-
-    s.reactants.append(a)
-    s.reactants.append(a)
-    s.reactants.append(b)
-
+    s.reactants.append(Compound("NaBr", 0, 0, []))
+    s.reactants.append(Compound("NaBr", 0, 0, []))
+    s.reactants.append(Compound("Cl2", 0, 0, []))
     s.predict()
 
-    prod = s.return_products()
-    react = s.return_reactants()
+    print(output(s.return_reactants()) + " -> " + output(s.return_products()))
 
-    print(output(react) + " -> " + output(prod))
-    print("Gibbs Energy Change: " + str(s.gibbs_change()/1000) + "kJmol-1")
-    print("Enthalpy Change: "+str(s.enthalpy_change()) + "kJmol-1")
-    print("Entropy Change: "+str(s.entropy_change()) + "Jmol-1")
+    q.reactants = s.products
+    q.reactants[2] = Compound("F2", 0, 0, [])
+
+    q.predict()
+
+    print(output(q.return_reactants()) + " -> " + output(q.return_products()))
+
 #TODO
