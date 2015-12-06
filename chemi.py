@@ -86,6 +86,8 @@ class Element:
         Z = Z - x
         E = -ryd*(math.pow(Z, 2)/math.pow(n, 2))
 
+	#This is the Rydberg formula - 1/lambda = RZ^2(1/n^2 - 1/n0^2) with n0 set to infinity - so it goes to RZ^2/n^2. As 1/lambda is proportional to Energy (E=hc/Lambda) this gives the energy. As ryd here is effectively hc/lambda for Z=1, n=1 it means no hc correction is needed.
+
         return E
 
     def highest_energy(self, q=1):
