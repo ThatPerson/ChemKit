@@ -77,7 +77,7 @@ class Element:
         return 1
 
     def shell_energy(self, n, l, m, x): # x n is the shell - ie 1, 2, 3. l is the subshell; spdf, m is the orbital; 1,2,3, x is the number of electrons before
-
+        # Uses a formula derived from Rydberg when setting the new energy level to infinity - ie it has escaped. 
         e_c = 1.60217662*pow(10, -19)
         e_m = 9.10938356*pow(10, -31)
         planck = 6.62607004*pow(10, -34)
@@ -378,7 +378,7 @@ class Reaction:
         if (self.temperature != 0):
 
 
-
+            # Arrhenius equation
             K = math.exp((-self.gibbs_change())/(8.3145 * self.temperature))
             return K
         else:
