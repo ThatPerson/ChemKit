@@ -77,7 +77,7 @@ class Element:
         return 1
 
     def shell_energy(self, n, l, m, x): # x n is the shell - ie 1, 2, 3. l is the subshell; spdf, m is the orbital; 1,2,3, x is the number of electrons before
-        # Uses a formula derived from Rydberg when setting the new energy level to infinity - ie it has escaped. 
+        # Uses a formula derived from Rydberg when setting the new energy level to infinity - ie it has escaped.
         e_c = 1.60217662*pow(10, -19)
         e_m = 9.10938356*pow(10, -31)
         planck = 6.62607004*pow(10, -34)
@@ -155,11 +155,13 @@ class Element:
 
 
 class Compound:
-    def __init__(self, name, entropy , enthalpy , constituents):
+    def __init__(self, name, molar, entropy , enthalpy , constituents):
         self.constituents = constituents
         self.name = name
         self.entropy = float(entropy)
         self.enthalpy = float(enthalpy)
+        self.molar = molar
+
         if (self.entropy == 0):
             self.check_data()
         if (name != ""):
@@ -259,6 +261,15 @@ class Reaction:
         self.system = []
         self.current = []
 
+    def limiting_factor(self):
+        lowest_v = Compound("", 0, 0, 0, [])
+        lowest_c = 1000
+        for i in self.reactants:
+            if i.molar < lowest_c:
+                lowest_c = i.molar
+                lowest_v = i
+        return [lowest_v.name, lowest_c]
+
     def find_en(self, type="HIGH"):
         if (type == "HIGH"):
             current = 0
@@ -334,7 +345,8 @@ class Reaction:
             self.compound = [i]
 
             self.get_next_set("HIGH", val, i)
-            self.products.append(Compound("", 0, 0, self.compound))
+            sdsd = self.limiting_factor()
+            self.products.append(Compound("", sdsd[1], 0, 0, self.compound))
 
     def return_products(self):
         q = {}
@@ -434,16 +446,21 @@ if __name__ == "__main__":
     print q["name"]
 
     s = Reaction(300)
-    q = Reaction(300)
+    s.reactants.append(Compound("NaI", 3, 0, 0, []))
+    s.reactants.append(Compound("NaI", 3, 0, 0, []))
+    s.reactants.append(Compound("Cl2", 1, 0, 0, []))
 
-    s.reactants.append(Compound("FeBr3", 0, 0, []))
-    s.reactants.append(Compound("Al", 0, 0, []))
+
+
     s.predict()
 
     print(output(s.return_reactants()) + " -> " + output(s.return_products()))
+    x = s.limiting_factor()
+    print(x[0] + " is limiting")
+
 
     p = Reaction(373)
-    p.reactants.append(Compound("H2O(l)", 0, 0, []))
-    p.products.append(Compound("H2O(g)", 0, 0, []))
+    p.reactants.append(Compound("H2O(l)", 1, 0, 0, []))
+    p.products.append(Compound("H2O(g)", 1, 0, 0, []))
     print(p.equilibrium_point())
 #TODO
