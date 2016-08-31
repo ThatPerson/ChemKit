@@ -2,12 +2,11 @@ import json
 import re
 import csv
 import math
-import SocketServer
-import sys
-import json
-from BaseHTTPServer import BaseHTTPRequestHandler
-port = 5655
 
+port = 5655
+boltzmann = 1.23 * math.pow(10, -23)
+avogadro = 6.02*math.pow(10, 23)
+planck = 6.626*math.pow(10, -34)
 periodic_table = {}
 preset_compound_data = {}
 class Element:
@@ -31,6 +30,8 @@ class Element:
         self.electronegativity = electronegativity
         self.get_shells()
         self.electrons = electrons
+        self.atomic_radius = 0
+
     def get_shells(self):
         '''
             This is a very ugly algorithm. It works by assuming that the lowest
@@ -78,22 +79,19 @@ class Element:
 
     def shell_energy(self, n, l, m, x): # x n is the shell - ie 1, 2, 3. l is the subshell; spdf, m is the orbital; 1,2,3, x is the number of electrons before
         # Uses a formula derived from Rydberg when setting the new energy level to infinity - ie it has escaped.
-        e_c = 1.60217662*pow(10, -19)
-        e_m = 9.10938356*pow(10, -31)
-        planck = 6.62607004*pow(10, -34)
+
         Z = self.atomic_number
         ryd = 13.6057
         Z = Z - x
         E = -ryd*(math.pow(Z, 2)/math.pow(n, 2))
 
-	#This is the Rydberg formula - 1/lambda = RZ^2(1/n^2 - 1/n0^2) with n0 set to infinity - so it goes to RZ^2/n^2. As 1/lambda is proportional to Energy (E=hc/Lambda) this gives the energy. As ryd here is effectively hc/lambda for Z=1, n=1 it means no hc correction is needed.
+    #This is the Rydberg formula - 1/lambda = RZ^2(1/n^2 - 1/n0^2) with n0 set to infinity - so it goes to RZ^2/n^2. As 1/lambda is proportional to Energy (E=hc/Lambda) this gives the energy. As ryd here is effectively hc/lambda for Z=1, n=1 it means no hc correction is needed.
 
         return E
 
     def highest_energy(self, q=1):
         c = 0
         w = 0
-        latest = 0
         energy = 0
         for n in range(0, len(self.shells)):
             for l in range(0, len(self.shells[n])):
@@ -120,7 +118,7 @@ class Element:
 
         c = 0
         w = 0
-        latest = 0
+
         for n in range(0, len(self.shells)):
             for l in range(0, len(self.shells[n])):
                 w = 0
@@ -138,7 +136,7 @@ class Element:
                         response['shells'][shell] = {}
                         response['shells'][shell]['energy'] = round(energy, dp)
                         response['shells'][shell]['number'] = self.shells[n][l][m]
-                        latest = energy
+
                         w = w + self.shells[n][l][m]
                 c = c + w
         return response
@@ -155,12 +153,14 @@ class Element:
 
 
 class Compound:
-    def __init__(self, name, molar, entropy , enthalpy , constituents):
+    def __init__(self, name, molar, entropy , enthalpy , constituents, temp=0):
         self.constituents = constituents
         self.name = name
+        self.full_name = name
         self.entropy = float(entropy)
         self.enthalpy = float(enthalpy)
         self.molar = molar
+        self.temp = temp
 
         if (self.entropy == 0):
             self.check_data()
@@ -175,11 +175,88 @@ class Compound:
 
         except:
             print "Data not found"
+
+    def get_new_data(self):
+        self.entropy = float(preset_compound_data[self.full_name].entropy)
+        self.enthalpy = float(preset_compound_data[self.full_name].enthalpy)
+        return 1
+
     def components(self):
         q = []
         for i in self.constituents:
             q.append(i.name)
         return q
+
+    def melting_point(self):
+        """# how to get a. atomic spacing. Add up all atomic spacing in compound and find average?
+        spacing = []
+        for i in range(0, len(self.constituents)):
+            for j in range(0, len(self.constituents)):
+                if i != j:
+                    spacing.append(self.constituents[i].atomic_radius + self.constituents[j].atomic_radius)
+
+
+        a = sum(spacing)/len(spacing) # a is in pm
+        print(a)
+        debye = 0
+        # cl is Lindemann constant, approximating at 0.22
+        Tm = (4*math.pow(math.pi, 2)*self.mass()*0.22*math.pow(a*math.pow(10, -12),2))/(boltzmann)
+        #Tm = 2*math.pi*self.mass()*math.pow(0.22, 2)*math.pow(debye, 2)*boltzmann/math.pow(planck, 2)
+
+        return Tm
+        # http://phycomp.technion.ac.il/~phsorkin/thesis/node4.html
+        # Should only be for crystals and similar but given that generally a molecule exists as a crystal when solid (unless it's organic but this doesn't really work with organics)
+        # Tm = 4pi^2*m*cl*a^2/kb"""
+
+        # Calculating from first principles is a pain. For some compounds I guess I could get (l) and (s) and work out the Gibbs change.
+        name = self.name
+        name = re.sub(r"\(.\)", "", name)
+        l = Reaction(0)
+        l.reactants.append(Compound(name+"(s)", 1, 0, 0, []))
+        l.products.append(Compound(name+"(l)", 1, 0, 0, []))
+        return l.turning_point()
+
+    def boiling_point(self):
+        name = self.name
+        name = re.sub(r"\(.\)", "", name)
+        l = Reaction(0)
+        l.reactants.append(Compound(name+"(l)", 1, 0, 0, []))
+        l.products.append(Compound(name+"(g)", 1, 0, 0, []))
+        return l.turning_point()
+
+    def sublimation_point(self):
+        name = self.name
+        name = re.sub(r"\(.\)", "", name)
+        l = Reaction(0)
+        l.reactants.append(Compound(name+"(s)", 1, 0, 0, []))
+        l.products.append(Compound(name+"(g)", 1, 0, 0, []))
+        return l.turning_point()
+
+    def get_state(self, temp=-34): # this algorithm is only as good as the enthalpy and entropy data it's based on. I'm hoping to use equations to calculate the MP and BP without enthalpy or entropy. If I can it may be possible to do some simulatenous equations to get the enthalpy and entropy back from it!
+        if (temp == -34):
+            temp = self.temp
+        mp = self.melting_point()
+        bp = self.boiling_point()
+        sp = self.sublimation_point()
+        if (bp == -1 or mp == -1):
+            if (sp == -1):
+                return "n"
+            else:
+                if (temp >= sp):
+                    return "g"
+                else:
+                    return "s"
+
+        if (temp >= bp):
+            return "g"
+        elif (bp > temp >= mp):
+            return "l"
+        else:
+            return "s"
+
+
+        return 1
+
     def find_constituents(self):
         name = self.name
         if (len(name) == 0):
@@ -428,39 +505,84 @@ with open('pt.json') as json_data:
         periodic_table[i['small']] = Element(i['name'], i['small'], i['position'], i['molar'], i['number'], i['electronegativity'], i['electrons'])
     json_data.close()
 
+with open('radii.csv', 'rb') as csvfile:
+    datar = csv.reader(csvfile, delimiter=',', quotechar='@')
+    for row in datar:
+        radii = 10
+        for i in range(3, 6):
+            if (row[i] != "na" and re.search('[a-zA-Z]',row[i]) != False):
+                radii = row[i] # some elements only have empirical, some only have calculated. If they don't have either then it will default to 10.
+                print(row[i])
+                break
+
+        try:
+            periodic_table[row[1]].atomic_radius = float(radii)
+        except:
+            5 + 5
+# atomic number,symbol,name,empirical t,Calculated,van der Waals,Covalent (single bond),Covalent (triple bond),Metallic (data is from https://en.wikipedia.org/wiki/Atomic_radii_of_the_elements_(data_page), while wikipedia might not be the most reliable this page is referenced and is nicely presented.)
+
+
 with open('data.csv', 'rb') as csvfile:
-    datar = csv.reader(csvfile, delimiter='@', quotechar='|')
+    datar = csv.reader(csvfile, delimiter=',', quotechar='@')
     for row in datar:
         preset_compound_data[row[0]] = Predefined_Compound(row[0], row[1], row[3])
 
 
 with open('data2.csv', 'rb') as csvfile:
-    datar = csv.reader(csvfile, delimiter='@', quotechar='|')
+    datar = csv.reader(csvfile, delimiter=',', quotechar='@')
     for row in datar:
         preset_compound_data[row[0]] = Predefined_Compound(row[0], row[1], row[3])
+
+with open('data3.csv', 'rb') as csvfile:
+    datar = csv.reader(csvfile, delimiter=',', quotechar='@')
+    for row in datar:
+        preset_compound_data[row[0]] = Predefined_Compound(row[0], row[1], row[2])
+        #https://www.chem.wisc.edu/deptfiles/genchem/netorial/modules/thermodynamics/table.htm
 
 ################################################################################
 
 if __name__ == "__main__":
     q = periodic_table["Na"].out(1)
-    print q["name"]
+   # print q["name"]
 
     s = Reaction(300)
-    s.reactants.append(Compound("NaI", 3, 0, 0, []))
-    s.reactants.append(Compound("NaI", 3, 0, 0, []))
-    s.reactants.append(Compound("Cl2", 1, 0, 0, []))
+    s.reactants.append(Compound("CuCl2", 3, 0, 0, []))
+    s.reactants.append(Compound("2NaOH", 3, 0, 0, []))
 
+#    s.reactants.append(Compound("Na", 3, 0, 0, []))
+    #s.reactants.append(Compound("Cl2", 1, 0, 0, []))
 
+#FeCl3 + Al -> AlCl3 + Fe
 
     s.predict()
 
     print(output(s.return_reactants()) + " -> " + output(s.return_products()))
     x = s.limiting_factor()
-    print(x[0] + " is limiting")
+   # print(x[0] + " is limiting")
 
+    """compounds = ["NaCl", "KCl", "NaF", "KF", "NaBr", "KBr", "LiCl", "LiF", "LiBr", "RbCl" ,"RbF", "RbBr"]
+    for i in compounds:
+        l = Compound(i, 1, 0, 0, [])
+        print(i + ", "+ str(l.melting_point()))
+"""
 
     p = Reaction(373)
     p.reactants.append(Compound("H2O(l)", 1, 0, 0, []))
     p.products.append(Compound("H2O(g)", 1, 0, 0, []))
-    print(p.equilibrium_point())
+    print(p.turning_point())
+
+
+    s = Compound("H2O", 1, 0, 0, [])
+    print(s.get_state(0))
+    print(s.get_state(10))
+    print(s.get_state(100))
+    print(s.get_state(1000))
+    print(s.get_state(10000))
+    print(s.get_state(100000))
+
+#C3H8 + 5O2 -> 3CO2 + 4H2O
+#FeCl3 + Al -> AlCl3 + Fe
+#2NaCl + F2 -> 2NaF + Cl2
+
+
 #TODO
