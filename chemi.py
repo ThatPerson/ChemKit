@@ -7,6 +7,8 @@ port = 5655
 boltzmann = 1.23 * math.pow(10, -23)
 avogadro = 6.02*math.pow(10, 23)
 planck = 6.626*math.pow(10, -34)
+K = 1.2025 * math.pow(10, -4)
+ddd = 3.45 * math.pow(10, -11)
 periodic_table = {}
 preset_compound_data = {}
 class Element:
@@ -245,10 +247,6 @@ class Compound:
 			elif (i.cat_or_an() == 0):
 				Zt = Zt + i.atomic_number
 				Nt = len(i.electrons)
-		print(Zo)
-		print(No)
-		print(Zt)
-		print(Nt)
 		if (No == 0 or Nt == 0):
 			return -1
 		R = 13.6
@@ -260,13 +258,40 @@ class Compound:
 		#https://en.wikipedia.org/wiki/Born%E2%80%93Land%C3%A9_equation
 		#Average with current function.
 
-		
+		'''
+		 This algorithm is lightly based on the shell energy one - I reasoned that the difference in energy between the outermost shells of two atoms would indicate a stronger bond (as is used
+		 in general prediction s). I then calculated this shell energy difference for a number of ionic compounds (typically ones where there is only one Cation and one Anion, like NaF, NaCl).
+		 This showed a reasonable correlation, and is less computationally expensive than using alg2 while not requiring as much data as the original.
+		'''
 
 		return melting_point
 
 	def predict_mp_alg2(self): # Uses Born-Lande equation to calculate Lattice Enthalpy. LE is correlated with melting point of test compounds with coeff 0.93.
 		melting_point = 0
+		n_cat = 0
+		n_an = 0
+		c_cat = 0
+		c_an = 0
+		d_cat = 0
+		d_an = 0
 
+		for i in self.constituents:
+			l = i.cat_or_an()
+			if (l == 1):
+				n_cat = n_cat + 1
+				c_cat = c_cat + i.valency()
+				d_cat = i.atomic_radius
+			elif (l == 0):
+				n_an = n_an + 1
+				c_an = c_an + i.valency()
+				d_an = i.atomic_radius
+
+		num = 2
+		cat = 1.3 - (0.3 * c_cat)
+		dist = (d_an + d_cat) * math.pow(10, -12)
+		X = ((K*num*cat*c_an)/dist) * (1 - (ddd/dist))
+
+		melting_point = 0.00148848 * X + 1.0007
 		return melting_point
 
 	def boiling_point(self):
@@ -565,7 +590,6 @@ with open('radii.csv', 'rb') as csvfile:
 		for i in range(3, 6):
 			if (row[i] != "na" and re.search('[a-zA-Z]',row[i]) != False):
 				radii = row[i] # some elements only have empirical, some only have calculated. If they don't have either then it will default to 10.
-				print(row[i])
 				break
 
 		try:
@@ -595,46 +619,14 @@ with open('data3.csv', 'rb') as csvfile:
 ################################################################################
 
 if __name__ == "__main__":
-	q = periodic_table["Na"].out(1)
-   # print q["name"]
-
 	s = Reaction(300)
-	s.reactants.append(Compound("CuCl2", 3, 0, 0, []))
-	s.reactants.append(Compound("2NaOH", 3, 0, 0, []))
-
-#	s.reactants.append(Compound("Na", 3, 0, 0, []))
-	#s.reactants.append(Compound("Cl2", 1, 0, 0, []))
-
-#FeCl3 + Al -> AlCl3 + Fe
+	s.reactants.append(Compound("C3H8", 3, 0, 0, []))
+	s.reactants.append(Compound("5O2", 3, 0, 0, []))
 
 	s.predict()
 
 	print(output(s.return_reactants()) + " -> " + output(s.return_products()))
-	x = s.limiting_factor()
-   # print(x[0] + " is limiting")
 
-	"""compounds = ["NaCl", "KCl", "NaF", "KF", "NaBr", "KBr", "LiCl", "LiF", "LiBr", "RbCl" ,"RbF", "RbBr"]
-	for i in compounds:
-		l = Compound(i, 1, 0, 0, [])
-		print(i + ", "+ str(l.melting_point()))
-"""
-
-	p = Reaction(373)
-	p.reactants.append(Compound("H2O(l)", 1, 0, 0, []))
-	p.products.append(Compound("H2O(g)", 1, 0, 0, []))
-	print(p.turning_point())
-
-
-	s = Compound("H2O", 1, 0, 0, [])
-	print(s.get_state(0))
-	print(s.get_state(10))
-	print(s.get_state(100))
-	print(s.get_state(1000))
-	print(s.get_state(10000))
-	print(s.get_state(100000))
-
-	d = Compound("NaCl", 1, 0, 0, [])
-	print(d.predict_mp_alg1())
 
 #C3H8 + 5O2 -> 3CO2 + 4H2O
 #FeCl3 + Al -> AlCl3 + Fe
