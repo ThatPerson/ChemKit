@@ -289,7 +289,7 @@ class Compound:
 		num = 2
 		cat = 1.3 - (0.3 * c_cat)
 		dist = (d_an + d_cat) * math.pow(10, -12)
-		X = ((K*num*cat*c_an)/dist) * (1 - (ddd/dist))
+		X = ((K*num*cat*c_an)/(dist*n_an)) * (1 - (ddd/dist))
 
 		melting_point = 0.00148848 * X + 1.0007
 		return melting_point
@@ -627,6 +627,17 @@ if __name__ == "__main__":
 
 	print(output(s.return_reactants()) + " -> " + output(s.return_products()))
 
+	a = Compound("NaCl", 0, 0, 0, [])
+	b = Compound("FeCl2", 0, 0, 0, [])
+	c = Compound("CsI", 0, 0, 0, [])
+	
+	print(a.predict_mp_alg1())
+	print(a.predict_mp_alg2())
+	print(b.predict_mp_alg1())
+	print(b.predict_mp_alg2())
+	print(c.predict_mp_alg1())
+	print(c.predict_mp_alg2())
+	
 
 #C3H8 + 5O2 -> 3CO2 + 4H2O
 #FeCl3 + Al -> AlCl3 + Fe
