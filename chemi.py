@@ -33,6 +33,7 @@ class Element:
 		self.get_shells()
 		self.electrons = electrons
 		self.atomic_radius = 0
+		self.valency_v = 0
 
 	def get_shells(self):
 		'''
@@ -95,7 +96,7 @@ class Element:
 		Z = self.atomic_number
 		ryd = 13.6057
 		S = 0 # use Slater's Rules
-		s_n = n
+		s_n = n - 1
 		s_l = l
 		s_m = m
 
@@ -116,13 +117,28 @@ class Element:
 
 		S = 0.35 * p[0] + 0.85*p[1] + 1.0*p[2]
 		Z = Z - S
-		Z = -0.02178 * math.pow(Z, 2) + 0.9048*Z + 0.1991 # Correction factor
-		E = -ryd*(math.pow(Z, 2)/math.pow(n, 2))
+		#Z = -0.02178 * math.pow(Z, 2) + 0.9048*Z + 0.1991 # Correction factor
+		#E = ryd*(math.pow(Z, 2)/math.pow(n, 2))
 
-		return E
-
+		return Z
 
 	def highest_energy(self, q=1):
+		c = 0
+		w = 0
+		energy = 0
+		for n in range(0, len(self.shells)):
+			for l in range(0, len(self.shells[n])):
+				w = 0
+				for m in range(0, len(self.shells[n][l])):
+
+					if(self.shells[n][l][m] != 0):
+						energy = self.legacy_shell_energy(n+1, l, m-l, c)
+						w = w + self.shells[n][l][m]
+				c = c + w
+
+		return energy*q
+
+	def outer_shell_energy(self, q=1):
 		c = 0
 		w = 0
 		energy = 0
@@ -175,7 +191,12 @@ class Element:
 		return response
 
 	def valency(self):
-		outer_shell = self.electrons[len(self.electrons) - 1]
+		try:
+			outer_shell = self.electrons[len(self.electrons) - 1]
+		except:
+			print("No electrons")
+			return 0
+
 		valency = 1
 		if (outer_shell < 8): # Surely this limits it?
 			if (outer_shell < 4):
@@ -331,6 +352,26 @@ class Compound:
 		melting_point = 0.00148848 * X + 1.0007
 		return melting_point
 
+	def predict_mp_alg3(self): # Has absolutely no hope - I'm working on it.
+		Zo = 0 # Number of protons in cation - ie 11 for Na
+		No = 0 # Row of periodic table of cation - ie 3 for Na
+		Zt = 0 # Number of protons in anion - ie 17 for Cl
+		Nt = 0 # Row of periodic table of anion - ie 3 for Cl
+		if (len(self.constituents) == 0):
+			self.find_constituents()
+		for i in self.constituents:
+			if (i.cat_or_an() == 1):
+				Zo = Zo + i.outer_shell_energy()
+				No = No + i.atomic_number
+			elif (i.cat_or_an() == 0):
+				Zt = Zt + i.outer_shell_energy()
+				Nt = Nt + i.atomic_number
+		if (No != 0 and Nt != 0):
+			Q = abs((Zo/No) - (Zt/Nt))
+		else:
+			Q = -1
+		return Q
+
 	def boiling_point(self):
 		name = self.name
 		name = re.sub(r"\(.\)", "", name)
@@ -402,7 +443,10 @@ class Compound:
 		# type = 1; highest. type=0; lowest.
 		if (arr == []):
 			arr = self.constituents
-		current_lowest = Element()
+		if (len(arr) > 0):
+			current_lowest = arr[0]
+		else:
+			return "No elements left"
 		for i in arr:
 			if (type == 1):
 				if i.electronegativity > current_lowest.electronegativity:
@@ -413,10 +457,17 @@ class Compound:
 		return current_lowest
 
 	def predict_bonding(self):
+		#TODO: Consider valency - so C - H C-H C-H C-H etc.
 		# same algorithm as prediction - get highest EN, then lowest. Repeat.
 		tmp = self.constituents
+		for i in tmp:
+			i.valency_v = i.valency()
 		bonds = []
-		last = 0
+		last = self.get_en(0, tmp)
+		for i in tmp:
+			if i.small == last.small:
+				tmp.remove(i)
+				break
 		n = 0
 		s = 0
 		while len(tmp) > 0:
@@ -424,20 +475,27 @@ class Compound:
 				n = 1
 			else:
 				n = 0
-			q = self.get_en(n, tmp)
-			if (s != 0):
-				bonds.append([last, q])
-			#print(q)
+			current = self.get_en(n, tmp)
+			#bonds.append([last, current])
 			for i in tmp:
-				if (i.small == q.small):
-					tmp.remove(i)
-					break
+				if i.small == current.small:
+					if (last.valency_v >= current.valency_v):
+						last.valency_v = last.valency_v - current.valency_v
+						bonds.append([last, current, current.valency_v])
+						current.valency_v = 0
+						tmp.remove(i)
+					elif (last.valency_v < current.valency_v):
+						bonds.append([last, current, last.valency_v])
+						current.valency_v = current.valency_v - last.valency_v
+						tmp.remove(i)
+						last = current
+					#break
 
 
-			#tmp.remove(q)
-			last = q
-			s = 1
 		return bonds
+
+
+
 
 	def find_name(self):
 		chemicals = []
@@ -652,6 +710,32 @@ def output(q):
 			resp = resp + key
 	return resp
 
+def predict_ir_spec(bonds):
+	spec = []
+	unique_types = []
+	for l in bonds:
+		#print(l[0].small + " - " + l[1].small + ":: "+str(l[2]))
+		z = l
+		if z[2] == 0:
+			z[2] = 1
+		q = [z[1], z[0], z[2]]
+		if z not in unique_types:
+			if q not in unique_types:
+				unique_types.append(z)
+
+	for i in unique_types:
+		# atom i[0] is bonded to i[1] with a i[2] bond.
+		# V = 4.12sqrt(K/mu). K is approximated to 5*10^5 dynescm-1 * bond strength. Formula from Brown's Organic Chemistry 7th Edition
+		reduced_mass = (i[0].molar * i[1].molar)/(i[0].molar + i[1].molar)
+		print(reduced_mass)
+		V = 4.12*math.sqrt((5*pow(10, 5) * i[2])/reduced_mass)
+		spec.append(V)
+
+		ss = ["single", "double", "triple"]
+		print(i[0].name + " is involved in a "+ss[i[2]-1] +" bond with "+i[1].name)
+	return spec
+
+
 # could have entropy and enthalpy values in list as they are now so they get added when the compound is created? also get rid of (g)/(l) etc before you run the split code - but maintain in the name (or a new phase variable?)
 
 ######################LOAD DATA#################################################
@@ -699,21 +783,41 @@ with open('data3.csv', 'rb') as csvfile:
 
 if __name__ == "__main__":
 	s = Reaction(300)
-	s.reactants.append(Compound("2NaCl", 3, 0, 0, []))
-	s.reactants.append(Compound("F2", 3, 0, 0, []))
+	s.reactants.append(Compound("CH4", 3, 0, 0, []))
+	s.reactants.append(Compound("3O2", 3, 0, 0, []))
 
 	s.predict()
 
 	print(output(s.return_reactants()) + " -> " + output(s.return_products()))
-	for i in s.reactants+s.products:
-		q = i.predict_bonding()
-		for l in q:
-			print(l[0].small + " - " + l[1].small)
 
-	print(s.products[0].name)
-	print("Melting Point is "+str(s.products[0].predict_mp_alg1()))
-	print("Melting Point 2 is " + str(s.products[0].predict_mp_alg2()))
+	q = Compound("CH3OH", 1, 0, 0, [])
+	#predict_ir_spec()
+	unique_types = []
+	wewe = q.predict_bonding()
+	print(predict_ir_spec(wewe))
+	for l in wewe:
+		print(l[0].small + " - " + l[1].small + ":: "+str(l[2]))
+		z = l
+		if z[2] == 0:
+			z[2] = 1
+		q = [z[1], z[0], z[2]]
+		if z not in unique_types:
+			if q not in unique_types:
+				unique_types.append(z)
+	for i in unique_types:
+		ss = ["single", "double", "triple"]
+		print(i[0].name + " is involved in a "+ss[i[2]-1] +" bond with "+i[1].name)
 
+
+#	print(s.products[0].name)
+#	print("Melting Point is "+str(s.products[0].predict_mp_alg1()))
+#	print("Melting Point 2 is " + str(s.products[0].predict_mp_alg2()))
+	#c = ["LiF", "LiCl", "LiBr", "LiI", "NaF", "NaCl", "NaBr", "NaI", "KF", "KCl", "KBr", "KI", "CsF", "CsCl", "CsBr", "CsI", "BeO", "BeS", "BeSe", "MgO", "MgS", "MgSe", "CaO", "CaS", "CaSe", "BaO", "BaS", "BaSe", "CuF", "CuCl", "CuBr", "CuI", "CuO", "CuS", "CuSe", "FeO", "FeS", "FeSe", "CoO", "CoS", "CoSe", "NiO", "NiS", "NiSe", "PbO", "PbS", "PbSe", "SnO", "SnS", "SnSe", "Li2O", "Li2S", "Li2Se", "Na2S", "Na2S", "Na2Se", "K2O", "K2S", "K2Se", "Cs2O", "Cs2S", "Cs2Se", "BeF2", "BeCl2", "BeBr2", "BeI2", "MgF2", "MgCl2", "MgBr2", "MgI2", "CaF2", "CaCl2", "CaBr2", "CaI2", "BaF2", "BaCl2", "BaBr2", "BaI2", "FeF2", "FeCl2", "FeBr2", "FeI2", "CoF2", "CoCl2", "CoBr2", "CoI2", "NiF2", "NiCl2", "NiBr2", "NiI2", "CuF2", "CuCl2", "CuBr2", "CuI2", "SnF2", "SnCl2", "SnBr2", "SnI2", "PbF2", "PbCl2", "PbBr2", "PbI2", "FeF3", "FeCl3", "FeBr3", "FeI3", "CoF3", "CoCl3", "CoBr3", "CoI3", "NiF3", "NiCl3", "NiBr3", "NiI3", "SnF4", "SnCl4", "SnBr4", "SnI4", "PbF4", "PbCl4", "PbBr4", "PBI4", "Li3N", "Li3P", "Na3N", "Na3P", "K3N", "K3P", "Cs3N", "Cs3P"]
+	#compounds = []
+	#for i in c:
+	#	compounds.append(Compound(i, 1, 0, 0, []))
+	#for i in compounds:
+	#	print(i.name + ", " + str(i.predict_mp_alg3()) + ", " + str(i.predict_mp_alg2()) + ", " + str(i.predict_mp_alg1()))
 
 #C3H8 + 5O2 -> 3CO2 + 4H2O
 #FeCl3 + Al -> AlCl3 + Fe
