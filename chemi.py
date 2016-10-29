@@ -79,7 +79,7 @@ class Element:
 
 		return 1
 
-	def shell_energy(self, n, l, m, x): # x n is the shell - ie 1, 2, 3. l is the subshell; spdf, m is the orbital; 1,2,3, x is the number of electrons before
+	def legacy_shell_energy(self, n, l, m, x): # x n is the shell - ie 1, 2, 3. l is the subshell; spdf, m is the orbital; 1,2,3, x is the number of electrons before
 		# Uses a formula derived from Rydberg when setting the new energy level to infinity - ie it has escaped.
 
 		Z = self.atomic_number
@@ -91,6 +91,37 @@ class Element:
 		# ok no not actually the energy, but E=hf=hv/lam so proportional.
 		return E
 
+	def shell_energy(self, n, l, m): # n is 1, 2, 3 etc, PCN. l is subshell ie s p d f, 0 1 2 3. m is the orbital that it's in.
+		Z = self.atomic_number
+		ryd = 13.6057
+		S = 0 # use Slater's Rules
+		s_n = n
+		s_l = l
+		s_m = m
+
+		#print(str(s_n) + " ----- "+str(s_l) + " ----- "+ str(s_m))
+		p = [0, 0, 0]
+		for i in range(0, s_l):
+			for j in range(0, len(self.shells[s_n][i])):
+				#print(str(s_n) + "::::"+str(i)+"::::"+str(j))
+				p[0] = p[0] + self.shells[s_n][i][j]
+				p[0] = p[0] - 1 # Because else it counts the electron itself.
+		for i in range(0, len(self.shells[s_n-1])):
+			for j in range(0, len(self.shells[s_n-1][i])):
+				p[1] = p[1] + self.shells[s_n-1][i][j]
+		for i in range(0, s_n-1):
+			for j in range(0, len(self.shells[i])):
+				for k in range(0, len(self.shells[i][j])):
+					p[2] = p[2] + self.shells[i][j][k]
+
+		S = 0.35 * p[0] + 0.85*p[1] + 1.0*p[2]
+		Z = Z - S
+		Z = -0.02178 * math.pow(Z, 2) + 0.9048*Z + 0.1991 # Correction factor
+		E = -ryd*(math.pow(Z, 2)/math.pow(n, 2))
+
+		return E
+
+
 	def highest_energy(self, q=1):
 		c = 0
 		w = 0
@@ -101,7 +132,7 @@ class Element:
 				for m in range(0, len(self.shells[n][l])):
 
 					if(self.shells[n][l][m] != 0):
-						energy = self.shell_energy(n+1, l, m-l, c)
+						energy = self.shell_energy(n+1, l, m-l)
 						w = w + self.shells[n][l][m]
 				c = c + w
 
@@ -240,6 +271,8 @@ class Compound:
 		No = 0 # Row of periodic table of cation - ie 3 for Na
 		Zt = 0 # Number of protons in anion - ie 17 for Cl
 		Nt = 0 # Row of periodic table of anion - ie 3 for Cl
+		if (len(self.constituents) == 0):
+			self.find_constituents()
 		for i in self.constituents:
 			if (i.cat_or_an() == 1):
 				Zo = Zo + i.atomic_number
@@ -274,7 +307,8 @@ class Compound:
 		c_an = 0
 		d_cat = 0
 		d_an = 0
-
+		if (len(self.constituents) == 0):
+			self.find_constituents()
 		for i in self.constituents:
 			l = i.cat_or_an()
 			if (l == 1):
@@ -289,8 +323,11 @@ class Compound:
 		num = 2
 		cat = 1.3 - (0.3 * c_cat)
 		dist = (d_an + d_cat) * math.pow(10, -12)
-		X = ((K*num*cat*c_an)/(dist*n_an)) * (1 - (ddd/dist))
-
+		try:
+			X = ((K*num*cat*c_an)/(dist*n_an)) * (1 - (ddd/dist))
+		except:
+			X = 0
+			print("Melting point prediction failed")
 		melting_point = 0.00148848 * X + 1.0007
 		return melting_point
 
@@ -360,6 +397,47 @@ class Compound:
 						self.constituents.append(periodic_table[q])
 			except:
 				print("Element "+q+" not found.")
+
+	def get_en(self, type, arr=[]):
+		# type = 1; highest. type=0; lowest.
+		if (arr == []):
+			arr = self.constituents
+		current_lowest = Element()
+		for i in arr:
+			if (type == 1):
+				if i.electronegativity > current_lowest.electronegativity:
+					current_lowest = i
+			else:
+				if i.electronegativity < current_lowest.electronegativity:
+					current_lowest = i
+		return current_lowest
+
+	def predict_bonding(self):
+		# same algorithm as prediction - get highest EN, then lowest. Repeat.
+		tmp = self.constituents
+		bonds = []
+		last = 0
+		n = 0
+		s = 0
+		while len(tmp) > 0:
+			if (n == 0):
+				n = 1
+			else:
+				n = 0
+			q = self.get_en(n, tmp)
+			if (s != 0):
+				bonds.append([last, q])
+			#print(q)
+			for i in tmp:
+				if (i.small == q.small):
+					tmp.remove(i)
+					break
+
+
+			#tmp.remove(q)
+			last = q
+			s = 1
+		return bonds
 
 	def find_name(self):
 		chemicals = []
@@ -498,9 +576,10 @@ class Reaction:
 			self.system.remove(i)
 			val = i.valency()
 			self.compound = [i]
-
 			self.get_next_set("HIGH", val, i)
 			sdsd = self.limiting_factor()
+			#print(sdsd[1])
+			print(self.compound)
 			self.products.append(Compound("", sdsd[1], 0, 0, self.compound))
 
 	def return_products(self):
@@ -598,7 +677,7 @@ with open('radii.csv', 'rb') as csvfile:
 			5 + 5
 # atomic number,symbol,name,empirical t,Calculated,van der Waals,Covalent (single bond),Covalent (triple bond),Metallic (data is from https://en.wikipedia.org/wiki/Atomic_radii_of_the_elements_(data_page), while wikipedia might not be the most reliable this page is referenced and is nicely presented.)
 
-
+# data.csv and data2.csv
 with open('data.csv', 'rb') as csvfile:
 	datar = csv.reader(csvfile, delimiter=',', quotechar='@')
 	for row in datar:
@@ -620,24 +699,21 @@ with open('data3.csv', 'rb') as csvfile:
 
 if __name__ == "__main__":
 	s = Reaction(300)
-	s.reactants.append(Compound("C3H8", 3, 0, 0, []))
-	s.reactants.append(Compound("5O2", 3, 0, 0, []))
+	s.reactants.append(Compound("2NaCl", 3, 0, 0, []))
+	s.reactants.append(Compound("F2", 3, 0, 0, []))
 
 	s.predict()
 
 	print(output(s.return_reactants()) + " -> " + output(s.return_products()))
+	for i in s.reactants+s.products:
+		q = i.predict_bonding()
+		for l in q:
+			print(l[0].small + " - " + l[1].small)
 
-	a = Compound("NaCl", 0, 0, 0, [])
-	b = Compound("FeCl2", 0, 0, 0, [])
-	c = Compound("CsI", 0, 0, 0, [])
-	
-	print(a.predict_mp_alg1())
-	print(a.predict_mp_alg2())
-	print(b.predict_mp_alg1())
-	print(b.predict_mp_alg2())
-	print(c.predict_mp_alg1())
-	print(c.predict_mp_alg2())
-	
+	print(s.products[0].name)
+	print("Melting Point is "+str(s.products[0].predict_mp_alg1()))
+	print("Melting Point 2 is " + str(s.products[0].predict_mp_alg2()))
+
 
 #C3H8 + 5O2 -> 3CO2 + 4H2O
 #FeCl3 + Al -> AlCl3 + Fe
