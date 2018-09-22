@@ -174,7 +174,7 @@ class Element:
 				for m in range(0, len(self.shells[n][l])):
 
 					if(self.shells[n][l][m] != 0):
-						energy = self.shell_energy(n+1, l, m-l, c)
+						energy = self.legacy_shell_energy(n+1, l, m-l, c)
 						s = ""
 						if l == 0:s = "s"
 						elif l == 1:s = "p"
@@ -601,8 +601,9 @@ class Reaction:
 
 	def predict(self):
 		'''
-			This algorithm works on the principle that a reaction will _always_
-			tend to its lowest energy state, and that those atoms most willing
+			This algorithm works on the principle that elements prefer to be
+			with those on the other end of the electronegativity spectrum, 
+			and that those atoms most willing
 			to give up their electrons will have them taken by those most
 			willing to take them. It is therefore not always right - for example
 				C2H6O + O -> C2H4O + H2O (oxidation of ethanol)
@@ -763,13 +764,13 @@ with open('radii.csv', 'rb') as csvfile:
 
 # data.csv and data2.csv
 with open('data.csv', 'rb') as csvfile:
-	datar = csv.reader(csvfile, delimiter=',', quotechar='@')
+	datar = csv.reader(csvfile, delimiter='@', quotechar='#')
 	for row in datar:
 		preset_compound_data[row[0]] = Predefined_Compound(row[0], row[1], row[3])
 
 
 with open('data2.csv', 'rb') as csvfile:
-	datar = csv.reader(csvfile, delimiter=',', quotechar='@')
+	datar = csv.reader(csvfile, delimiter='@', quotechar='#')
 	for row in datar:
 		preset_compound_data[row[0]] = Predefined_Compound(row[0], row[1], row[3])
 

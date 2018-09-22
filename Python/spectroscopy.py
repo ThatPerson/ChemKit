@@ -15,19 +15,18 @@ class SpectroscopySystem:
 
 	def __init__(self, ab, bb, energy_levels, beta, k, *args, **kwargs):
 		self.electronic_energy_levels = energy_levels
-	 	self.atom_a = ab
-	 	self.atom_b = bb
-	 	bl = kwargs.get('bl', ab.atomic_radius + bb.atomic_radius)
-	 	self.bond_length = bl * pow(10, -12)
-	 	we = kwargs.get('we', 5.0341*pow(10,22) * math.sqrt(k / ((ab.molar + bb.molar) * 1.66 * pow(10, -27)))) # in reciprocal centimeters
-	 	xe = kwargs.get('xe', (1.0546 * pow(10, -34) * pow(beta, 2)) / (2 * ((ab.molar + bb.molar) * 1.66 * pow(10, -27)) * we))
-	 	self.vibrational_constant = we
-	 	self.anharmonicity_constant = xe
+		self.atom_a = ab
+		self.atom_b = bb
+		bl = kwargs.get('bl', ab.atomic_radius + bb.atomic_radius)
+		self.bond_length = bl * pow(10, -12)
+		we = kwargs.get('we', 5.0341*pow(10,22) * math.sqrt(k / ((ab.molar + bb.molar) * 1.66 * pow(10, -27)))) # in reciprocal centimeters
+		xe = kwargs.get('xe', (1.0546 * pow(10, -34) * pow(beta, 2)) / (2 * ((ab.molar + bb.molar) * 1.66 * pow(10, -27)) * we))
+		self.vibrational_constant = we
+		self.anharmonicity_constant = xe
+		I = self.reduced_mass() * 1.66*pow(10, -27) * pow(self.bond_length, 2)
+		self.rotational_constant = kwargs.get('rot', (pow(6.626 * pow(10, -34), 1))/(8*pow(math.pi, 2) * (3*pow(10, 10)) * I))
 
-	 	I = self.reduced_mass() * 1.66*pow(10, -27) * pow(self.bond_length, 2)
-	 	self.rotational_constant = kwargs.get('rot', (pow(6.626 * pow(10, -34), 1))/(8*pow(math.pi, 2) * (3*pow(10, 10)) * I))
-
-	 	self.temperature = kwargs.get('t', 273)
+		self.temperature = kwargs.get('t', 273)
 
 	def transition(self, ei, ef, vi, vf, ji, jf):
 		electronic = self.electronic_energy_levels[ef] - self.electronic_energy_levels[ei]
