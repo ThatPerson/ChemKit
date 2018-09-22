@@ -75,7 +75,7 @@ Regarding the melting point predictions, I've run them for a few compounds along
 | Compound | Alg 1 | Alg 2 | Alg 3 | Actual (from Mathematica) |
 |----------|-------|-------|-------|---------------------------|
 | NaCl     | 1087.8| 1122.0| 0.26  | 1074.2                    |
-| KCl      | 1097.4| |999.1| 0.00  | 1043.2                    |
+| KCl      | 1097.4| 999.1| 0.00  | 1043.2                    |
 | KF       | 1109.8| 1157.4| 0.31  | 1131.2                    |
 | MgF2     | 965.1 | 865.0 | 0.20  | 987.2                     |
 | H2O      | 1093.3| 3504.0| 0.26  | 273.2                     |
