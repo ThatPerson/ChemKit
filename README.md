@@ -2,7 +2,8 @@
 
 ChemKit is a module I wrote quite a few years ago to help me write other chemistry related programs. I've written some documentation here.
 
-```import chemi
+```
+import chemi
 ```
 
 In the same directory. This gives access to the following classes;
@@ -114,18 +115,21 @@ u'Cl2'
 
 So the reaction is predicted to be;
 
-``` 2NaCl + F2 -> 2NaF + Cl2
+```
+2NaCl + F2 -> 2NaF + Cl2
 ```
 
 In this case, that is correct. This technique also works for eg
 
-```C3H8 + 5O2 -> 3CO2 + 4H2O
+```
+C3H8 + 5O2 -> 3CO2 + 4H2O
 FeCl3 + Al -> AlCl3 + Fe
 ```
 
 However it is very limited;
 
-``` C2H6O + O -> C2H2 + 2H2O
+```
+C2H6O + O -> C2H2 + 2H2O
 ```
 
 Generally don't use it for organic molecules and don't trust it too much. It's less of an actual useful predictive tool and more of just an interesting thing I noticed a few years ago.
